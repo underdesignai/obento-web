@@ -7,7 +7,7 @@ function fmt(n) {
 }
 
 export default function DishCardOrder({ dish, onOpenAllergens }) {
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart();
 
   const tienePorciones = Array.isArray(dish.porciones) && dish.porciones.length > 0;
   const tieneOpciones = !tienePorciones && Array.isArray(dish.opciones) && dish.opciones.length > 0;
@@ -21,17 +21,22 @@ export default function DishCardOrder({ dish, onOpenAllergens }) {
   const [cantidad, setCantidad] = useState(1);
   const [addedEffect, setAddedEffect] = useState(false);
 
+  // Comprobar si el plato ya está en la cesta
+  const cartItemsOfDish = (cart || []).filter((item) => String(item.id) === String(dish.id));
+  const inCartQty = cartItemsOfDish.reduce((sum, item) => sum + (item.cantidad || 0), 0);
+  const isInCart = inCartQty > 0;
+
   const currentPrice = tienePorciones ? selectedPortion.precio : dish.precio;
 
   const handleAdd = () => {
     addToCart(dish, selectedPortion, selectedOption, cantidad);
     setAddedEffect(true);
     setCantidad(1);
-    setTimeout(() => setAddedEffect(false), 1200);
+    setTimeout(() => setAddedEffect(false), 900);
   };
 
   return (
-    <div className={`dish-order-card ${addedEffect ? 'just-added' : ''}`}>
+    <div className={`dish-order-card ${isInCart ? 'is-in-cart' : ''} ${addedEffect ? 'just-added' : ''}`}>
       {/* Imagen */}
       {dish.imagen && (
         <div className="dish-order-media">
@@ -136,15 +141,16 @@ export default function DishCardOrder({ dish, onOpenAllergens }) {
 
           <button
             type="button"
-            className={`btn-add-to-order ${addedEffect ? 'btn-added' : ''}`}
+            className={`btn-add-to-order ${isInCart ? 'btn-in-cart' : ''} ${addedEffect ? 'just-added-btn' : ''}`}
             onClick={handleAdd}
+            title={isInCart ? `Ya en el pedido (${inCartQty}). Haz clic para añadir más.` : `Añadir al pedido`}
           >
-            {addedEffect ? (
+            {isInCart ? (
               <>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="btn-ico-svg">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <span>¡Añadido!</span>
+                <span>✓ ¡Añadido!{inCartQty > 1 ? ` (${inCartQty})` : ''}</span>
               </>
             ) : (
               <>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { CATEGORIES, SUSHI_SUBCATEGORIES, MENU, ABOUT_INFO } from '../data/menuData';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { MENU, ABOUT_INFO } from '../data/menuData';
 import DishCardOrder from '../components/DishCardOrder';
 import CartDrawer from '../components/cart/CartDrawer';
 import CheckoutModal from '../components/cart/CheckoutModal';
@@ -11,6 +11,65 @@ function fmt(n) {
   return Number(n).toFixed(2).replace('.', ',') + '€';
 }
 
+const MENU_SECTIONS = [
+  {
+    id: 'entrantes',
+    label: 'Entrantes',
+    icon: '🥟',
+    desc: 'Empanadillas artesanas, ensaladas y bocados para comenzar.',
+    filter: (d) => d.cat === 'entrantes'
+  },
+  {
+    id: 'nigiri',
+    label: 'Nigiris',
+    icon: '🍣',
+    desc: 'Bocados de arroz sazonado con los cortes más selectos.',
+    filter: (d) => d.cat === 'sushi' && d.sub === 'nigiri'
+  },
+  {
+    id: 'uramaki',
+    label: 'Uramakis',
+    icon: '🍱',
+    desc: 'Rollos invertidos de autor con coberturas y texturas únicas.',
+    filter: (d) => d.cat === 'sushi' && d.sub === 'uramaki'
+  },
+  {
+    id: 'futomaki',
+    label: 'Futomakis',
+    icon: '🍙',
+    desc: 'Rollos gruesos con combinaciones generosas.',
+    filter: (d) => d.cat === 'sushi' && d.sub === 'futomaki'
+  },
+  {
+    id: 'maki',
+    label: 'Makis',
+    icon: '🥢',
+    desc: 'Rollos clásicos envueltos en alga nori fresca y crujiente.',
+    filter: (d) => d.cat === 'sushi' && d.sub === 'maki'
+  },
+  {
+    id: 'calientes',
+    label: 'Calientes',
+    icon: '🍜',
+    desc: 'Noodles al wok y arroces aromáticos al momento.',
+    filter: (d) => d.cat === 'calientes'
+  },
+  {
+    id: 'postres',
+    label: 'Postres',
+    icon: '🍰',
+    desc: 'Mochis artesanos y dulces japoneses.',
+    filter: (d) => d.cat === 'postres'
+  },
+  {
+    id: 'bebidas',
+    label: 'Bebidas',
+    icon: '🥤',
+    desc: 'Cervezas japonesas, refrescos y agua.',
+    filter: (d) => d.cat === 'bebidas'
+  }
+];
+
 export default function PedidosPage() {
   const {
     totalCount,
@@ -20,12 +79,12 @@ export default function PedidosPage() {
     clearCart
   } = useCart();
 
-  const [activeCat, setActiveCat] = useState('entrantes');
-  const [activeSushiSub, setActiveSushiSub] = useState('todos');
+  const [activeSectionId, setActiveSectionId] = useState('entrantes');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAllergenOpen, setIsAllergenOpen] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
   const [platosLista, setPlatosLista] = useState(MENU);
+  const stickyNavRef = useRef(null);
 
   // Sincronización en vivo con la carta oficial
   useEffect(() => {
@@ -70,7 +129,6 @@ export default function PedidosPage() {
               items: []
             });
           }
-          // Limpiar parámetros de la URL sin recargar
           window.history.replaceState({}, document.title, window.location.pathname);
         })
         .catch((err) => {
@@ -89,32 +147,97 @@ export default function PedidosPage() {
     }
   }, []);
 
-  // Platos filtrados por categoría, subcategoría y búsqueda
-  const filteredDishes = useMemo(() => {
-    let list = platosLista;
+  // Agrupar platos en secciones continuas hacia abajo
+  const sectionsWithDishes = useMemo(() => {
+    const isSearching = searchQuery.trim().length > 0;
+    const q = searchQuery.toLowerCase().trim();
 
-    // Si hay búsqueda por texto, busca en toda la carta
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      return list.filter(
+    const sections = MENU_SECTIONS.map((sec) => {
+      let list = platosLista.filter(sec.filter);
+      if (isSearching) {
+        list = list.filter(
+          (dish) =>
+            dish.nombre.toLowerCase().includes(q) ||
+            (dish.descripcion && dish.descripcion.toLowerCase().includes(q))
+        );
+      }
+      return {
+        ...sec,
+        dishes: list
+      };
+    });
+
+    // Soporte para platos no categorizados si los hubiera
+    let uncategorized = platosLista.filter((dish) => !MENU_SECTIONS.some((sec) => sec.filter(dish)));
+    if (isSearching) {
+      uncategorized = uncategorized.filter(
         (dish) =>
           dish.nombre.toLowerCase().includes(q) ||
           (dish.descripcion && dish.descripcion.toLowerCase().includes(q))
       );
     }
-
-    // Filtrar por categoría activa
-    list = list.filter((dish) => dish.cat === activeCat);
-
-    // Si es sushi y hay subcategoría activa
-    if (activeCat === 'sushi' && activeSushiSub !== 'todos') {
-      list = list.filter((dish) => dish.sub === activeSushiSub);
+    if (uncategorized.length > 0) {
+      sections.push({
+        id: 'especiales',
+        label: 'Especiales',
+        icon: '✨',
+        desc: 'Platos sugeridos y novedades.',
+        dishes: uncategorized
+      });
     }
 
-    return list;
-  }, [platosLista, activeCat, activeSushiSub, searchQuery]);
+    return sections;
+  }, [platosLista, searchQuery]);
 
-  const currentCategory = CATEGORIES.find((c) => c.slug === activeCat) || CATEGORIES[0];
+  const totalFilteredCount = useMemo(() => {
+    return sectionsWithDishes.reduce((acc, sec) => acc + sec.dishes.length, 0);
+  }, [sectionsWithDishes]);
+
+  // Desplazamiento suave tipo ancla hacia la sección seleccionada
+  const handleScrollToCategory = (id) => {
+    setActiveSectionId(id);
+    const element = document.getElementById(`sec-${id}`);
+    if (element) {
+      const isMobile = window.innerWidth <= 768;
+      const yOffset = isMobile ? -115 : -135;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
+  // ScrollSpy para iluminar la categoría activa automáticamente al hacer scroll
+  useEffect(() => {
+    if (searchQuery.trim()) return;
+
+    const handleScroll = () => {
+      const isMobile = window.innerWidth <= 768;
+      const threshold = window.pageYOffset + (isMobile ? 130 : 155);
+
+      for (let i = MENU_SECTIONS.length - 1; i >= 0; i--) {
+        const sec = MENU_SECTIONS[i];
+        const el = document.getElementById(`sec-${sec.id}`);
+        if (el && el.offsetTop <= threshold) {
+          setActiveSectionId(sec.id);
+
+          const tabBtn = document.getElementById(`tab-btn-${sec.id}`);
+          if (tabBtn && stickyNavRef.current) {
+            const container = stickyNavRef.current.querySelector('.pedidos-sticky-nav-inner');
+            if (container) {
+              const btnLeft = tabBtn.offsetLeft;
+              const btnRight = btnLeft + tabBtn.offsetWidth;
+              if (btnLeft < container.scrollLeft || btnRight > container.scrollLeft + container.offsetWidth) {
+                tabBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+              }
+            }
+          }
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [searchQuery, platosLista]);
 
   return (
     <div className="pedidos-page">
@@ -205,11 +328,34 @@ export default function PedidosPage() {
         </div>
       </section>
 
-      {/* Barra de Filtros, Categorías y Búsqueda */}
+      {/* Menú de Categorías SIEMPRE FIJO (Sticky Nav Bar) tipo Ancla */}
+      <nav className="pedidos-sticky-nav-bar" ref={stickyNavRef} aria-label="Categorías de la carta">
+        <div className="pedidos-sticky-nav-inner">
+          {MENU_SECTIONS.map((sec) => {
+            const count = platosLista.filter(sec.filter).length;
+            const isActive = activeSectionId === sec.id;
+            return (
+              <button
+                key={sec.id}
+                id={`tab-btn-${sec.id}`}
+                type="button"
+                className={`sticky-cat-btn ${isActive ? 'active' : ''}`}
+                onClick={() => handleScrollToCategory(sec.id)}
+              >
+                <span className="sticky-cat-icon">{sec.icon}</span>
+                <span className="sticky-cat-name">{sec.label}</span>
+                <span className="sticky-cat-count">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Sección Principal con Buscador y Lista de Platos hacia abajo */}
       <section className="pedidos-menu-section">
         <div className="section-container">
-          <div className="pedidos-controls-bar">
-            {/* Buscador */}
+          {/* Barra de Búsqueda */}
+          <div className="pedidos-controls-bar" style={{ marginBottom: '32px' }}>
             <div className="search-input-wrap">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="search-ico-svg">
                 <circle cx="11" cy="11" r="8" />
@@ -232,93 +378,32 @@ export default function PedidosPage() {
                 </button>
               )}
             </div>
-
-            {/* Desplegable de Categorías */}
-            {!searchQuery && (
-              <div className="pedidos-dropdown-container">
-                <div className="custom-dropdown-select-wrap">
-                  <span className="dropdown-prefix-icon">🍱</span>
-                  <select
-                    id="categoria-select"
-                    className="pedidos-category-select"
-                    value={activeCat}
-                    onChange={(e) => {
-                      setActiveCat(e.target.value);
-                      setActiveSushiSub('todos');
-                    }}
-                    aria-label="Seleccionar categoría de la carta"
-                  >
-                    {CATEGORIES.map((cat) => {
-                      const count = platosLista.filter((m) => m.cat === cat.slug).length;
-                      return (
-                        <option key={cat.slug} value={cat.slug}>
-                          {cat.label} ({count})
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <div className="dropdown-chevron-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Subcategorías de Sushi */}
-            {!searchQuery && activeCat === 'sushi' && (
-              <div className="sushi-subnav-bar">
-                <button
-                  type="button"
-                  className={`sushi-sub-pill ${activeSushiSub === 'todos' ? 'active' : ''}`}
-                  onClick={() => setActiveSushiSub('todos')}
-                >
-                  Todos ({platosLista.filter((m) => m.cat === 'sushi').length})
-                </button>
-                {SUSHI_SUBCATEGORIES.map((sub) => {
-                  const subCount = platosLista.filter((m) => m.cat === 'sushi' && m.sub === sub.slug).length;
-                  return (
-                    <button
-                      key={sub.slug}
-                      type="button"
-                      className={`sushi-sub-pill ${activeSushiSub === sub.slug ? 'active' : ''}`}
-                      onClick={() => setActiveSushiSub(sub.slug)}
-                    >
-                      {sub.label} ({subCount})
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </div>
 
-          {/* Encabezado de la lista actual */}
-          <div className="category-meta-header" style={{ marginTop: '24px', marginBottom: '24px' }}>
+          {/* Información alérgenos flotante / acceso rápido */}
+          <div className="category-meta-header" style={{ marginBottom: '28px' }}>
             <div>
-              <h2 className="category-meta-title">
-                {searchQuery ? `Resultados de búsqueda: "${searchQuery}"` : currentCategory.label}
+              <h2 className="category-meta-title" style={{ fontSize: '18px' }}>
+                {searchQuery ? `Resultados de búsqueda: "${searchQuery}" (${totalFilteredCount})` : 'Carta Completa Obento'}
               </h2>
               <p className="category-meta-desc">
                 {searchQuery
-                  ? `Se han encontrado ${filteredDishes.length} platos disponibles.`
-                  : activeCat === 'sushi' && activeSushiSub !== 'todos'
-                  ? `Selección especial de ${activeSushiSub}.`
-                  : `Selección elaborada con ingredientes frescos de máxima calidad.`}
+                  ? `Se muestran los platos coincidentes con tu búsqueda.`
+                  : 'Desplázate hacia abajo para ver todos los platos o pulsa en cualquier categoría superior para saltar a ella.'}
               </p>
             </div>
             <button
               type="button"
               className="btn-secondary-outline allergen-info-btn"
               onClick={() => setIsAllergenOpen(true)}
-              style={{ padding: '6px 14px', fontSize: '11px' }}
+              style={{ padding: '6px 14px', fontSize: '11px', whiteSpace: 'nowrap' }}
             >
-              Consultar Alérgenos
+              Guía de Alérgenos
             </button>
           </div>
 
-          {/* Grid de Platos Interactivos */}
-          {filteredDishes.length === 0 ? (
+          {/* Lista de Platos hacia abajo por secciones */}
+          {totalFilteredCount === 0 ? (
             <div className="empty-search-state">
               <p>No se encontraron platos que coincidan con "{searchQuery}".</p>
               <button
@@ -331,14 +416,42 @@ export default function PedidosPage() {
               </button>
             </div>
           ) : (
-            <div className="dishes-order-grid">
-              {filteredDishes.map((dish) => (
-                <DishCardOrder
-                  key={dish.id}
-                  dish={dish}
-                  onOpenAllergens={() => setIsAllergenOpen(true)}
-                />
-              ))}
+            <div className="pedidos-sections-flow">
+              {sectionsWithDishes.map((section) => {
+                if (section.dishes.length === 0) return null;
+                return (
+                  <section
+                    key={section.id}
+                    id={`sec-${section.id}`}
+                    className="pedidos-section-anchor"
+                  >
+                    <div className="pedidos-section-header">
+                      <div className="pedidos-section-title-wrap">
+                        <span className="pedidos-section-ico">{section.icon}</span>
+                        <div>
+                          <h2 className="pedidos-section-title">{section.label}</h2>
+                          {section.desc && (
+                            <p className="pedidos-section-desc">{section.desc}</p>
+                          )}
+                        </div>
+                      </div>
+                      <span className="pedidos-section-count-badge">
+                        {section.dishes.length} {section.dishes.length === 1 ? 'plato' : 'platos'}
+                      </span>
+                    </div>
+
+                    <div className="dishes-order-grid">
+                      {section.dishes.map((dish) => (
+                        <DishCardOrder
+                          key={dish.id}
+                          dish={dish}
+                          onOpenAllergens={() => setIsAllergenOpen(true)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           )}
         </div>
