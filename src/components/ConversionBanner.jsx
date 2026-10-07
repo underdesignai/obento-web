@@ -40,7 +40,7 @@ export default function ConversionBanner() {
                 <span className="conversion-eyebrow">¿Cenamos hoy?</span>
                 <h3 className="conversion-title">Tu Pedido en Obento Te Espera</h3>
                 <p className="conversion-desc">
-                  Haz tu encargo online para recoger en Calle Mayor 45, La Ñora (Murcia) recién elaborado con ingredientes frescos.
+                  Haz tu encargo online para recoger en Calle Amargura, 3, La Ñora (Murcia) recién elaborado con ingredientes frescos.
                 </p>
               </>
             )}

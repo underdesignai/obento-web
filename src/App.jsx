@@ -14,10 +14,12 @@ import PedidosPage from './pages/PedidosPage';
 import TrackingPage from './pages/TrackingPage';
 import DeliveryPage from './pages/DeliveryPage';
 import PwaInstallPrompt from './components/PwaInstallPrompt';
+import CookieBanner from './components/legal/CookieBanner';
+import LegalModal from './components/legal/LegalModal';
 import { CartProvider } from './context/CartContext';
 import { trackPageView } from './utils/analytics';
 
-function HomeView() {
+function HomeView({ onOpenLegal }) {
   const [isAllergenOpen, setIsAllergenOpen] = useState(false);
 
   useEffect(() => {
@@ -59,7 +61,10 @@ function HomeView() {
       </main>
 
       {/* Footer */}
-      <Footer onOpenAllergens={() => setIsAllergenOpen(true)} />
+      <Footer
+        onOpenAllergens={() => setIsAllergenOpen(true)}
+        onOpenLegal={onOpenLegal}
+      />
 
       {/* Alérgenos Modal */}
       <AllergenModal
@@ -87,21 +92,44 @@ function PageTracker() {
 }
 
 export default function App() {
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
+  const [legalTab, setLegalTab] = useState('aviso-legal');
+
+  const handleOpenLegal = (tab = 'aviso-legal') => {
+    setLegalTab(tab);
+    setIsLegalOpen(true);
+  };
+
+  useEffect(() => {
+    const handleGlobalLegal = (e) => {
+      const tab = e?.detail?.tab || 'aviso-legal';
+      handleOpenLegal(tab);
+    };
+    window.addEventListener('open_legal_modal', handleGlobalLegal);
+    return () => window.removeEventListener('open_legal_modal', handleGlobalLegal);
+  }, []);
+
   return (
     <CartProvider>
       <BrowserRouter>
         <PageTracker />
         <PwaInstallPrompt />
         <Routes>
-          <Route path="/" element={<HomeView />} />
+          <Route path="/" element={<HomeView onOpenLegal={handleOpenLegal} />} />
           <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/seguimiento" element={<TrackingPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
           <Route path="/delivery" element={<DeliveryPage />} />
           <Route path="/reparto" element={<DeliveryPage />} />
           {/* Fallback a home */}
-          <Route path="*" element={<HomeView />} />
+          <Route path="*" element={<HomeView onOpenLegal={handleOpenLegal} />} />
         </Routes>
+        <CookieBanner onOpenCookiesPolicy={() => handleOpenLegal('cookies')} />
+        <LegalModal
+          isOpen={isLegalOpen}
+          initialTab={legalTab}
+          onClose={() => setIsLegalOpen(false)}
+        />
       </BrowserRouter>
     </CartProvider>
   );

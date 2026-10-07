@@ -25,6 +25,15 @@ export default function AllergenModal({ isOpen, onClose }) {
             </div>
           ))}
         </div>
+        <div className="allergen-warning-box">
+          <p>
+            ⚠️ <strong>Aviso legal sobre contaminación cruzada (Reglamento UE 1169/2011):</strong> En nuestras instalaciones de cocina se elaboran diariamente platos con pescado crudo, marisco, soja, sésamo, huevo y gluten. A pesar de aplicar estrictos protocolos de manipulación, no podemos garantizar la ausencia total de trazas por contacto cruzado.
+          </p>
+          <p style={{ marginTop: '6px', fontSize: '12px', opacity: 0.85 }}>
+            Si tienes alguna alergia o intolerancia severa, por favor indícalo en el campo de notas al hacer el pedido o llámanos directamente al <strong>+34 613 927 596</strong>.
+          </p>
+        </div>
+
         <button
           type="button"
           className="btn-primary btn-block modal-close"

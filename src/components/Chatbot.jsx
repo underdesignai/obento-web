@@ -29,7 +29,7 @@ const DEFAULT_CONFIG = {
   activo: true,
   nombreBot: 'Obentico',
   colorTema: '#c81e22',
-  saludoInicial: '¡Hola! 🍣 Bienvenido a Obento Japanese Food. ¿Te apetece alguna recomendación de sushi para hoy??',
+  saludoInicial: '¡Hola! 🍣 Soy Obentico, el asistente virtual automatizado de Obento. Te ayudo a resolver dudas sobre la carta, alérgenos y horarios. ¿Te apetece alguna recomendación?',
   sugerencias: [
     '🍣 ¿Cuáles son los rollos más pedidos?',
     '🌾 ¿Tenéis opciones sin gluten?',

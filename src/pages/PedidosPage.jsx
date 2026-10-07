@@ -307,7 +307,7 @@ export default function PedidosPage() {
             </div>
             <h1 className="pedidos-hero-title">Haz tu Pedido Online</h1>
             <p className="pedidos-hero-desc">
-              Toda nuestra carta artesanal preparada al momento. Elige tus platos, personaliza tus porciones y recoge en Calle Mayor 45 recién salido de cocina.
+              Toda nuestra carta artesanal preparada al momento. Elige tus platos, personaliza tus porciones y recoge en Calle Amargura, 3 (La Ñora) recién salido de cocina.
             </p>
 
             <div className="pedidos-highlights-row">
@@ -321,7 +321,7 @@ export default function PedidosPage() {
               </div>
               <div className="pedidos-highlight-chip">
                 <span>📍</span>
-                <span>Recogida en Local: C/ Mayor 45, La Ñora</span>
+                <span>Recogida en Local: C/ Amargura 3, La Ñora</span>
               </div>
             </div>
           </div>

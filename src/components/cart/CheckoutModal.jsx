@@ -33,7 +33,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [tipoEntrega, setTipoEntrega] = useState('recogida_local'); // 'recogida_local' | 'domicilio'
   const [direccionEntrega, setDireccionEntrega] = useState('');
   const [direccionDetalles, setDireccionDetalles] = useState('');
-  const [codigoPostal, setCodigoPostal] = useState('30107'); // Default La Ñora / Murcia
+  const [codigoPostal, setCodigoPostal] = useState('30830'); // Default La Ñora / Murcia
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
@@ -42,6 +42,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
   const [notas, setNotas] = useState('');
   const [metodoPago, setMetodoPago] = useState('stripe'); // 'stripe' | 'restaurante'
   const [necesitaCubiertos, setNecesitaCubiertos] = useState(true);
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
 
   // Estados de la tarjeta bancaria (Simulación interactiva)
   const [numeroTarjeta, setNumeroTarjeta] = useState('');
@@ -90,6 +91,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
 
     if (cart.length === 0) {
       setErrorMsg('Tu cesta está vacía.');
+      return;
+    }
+
+    if (!aceptaTerminos) {
+      setErrorMsg('Debes aceptar la Política de Privacidad y las Condiciones de Contratación para tramitar el pedido.');
       return;
     }
 
@@ -598,14 +604,77 @@ export default function CheckoutModal({ onOrderSuccess }) {
             </div>
             <p className="checkout-location-info">
               {tipoEntrega === 'domicilio'
-                ? `🛵 Reparto a: ${direccionEntrega || 'Dirección indicada'} (${codigoPostal || '30107'}, Murcia)`
-                : '📍 Recogida en: Calle Mayor 45, La Ñora (Murcia)'}
+                ? `🛵 Reparto a: ${direccionEntrega || 'Dirección indicada'} (${codigoPostal || '30830'}, Murcia)`
+                : '📍 Recogida en: Calle Amargura, 3, 30830 La Ñora (Murcia)'}
             </p>
+          </div>
+
+          {/* Aviso Legal sobre Alimentos Perecederos (Art. 103 d TRLGDCU) */}
+          <div className="checkout-food-notice">
+            <span>⚠️ <strong>Aviso legal al consumidor:</strong> De conformidad con el Art. 103 d) del TRLGDCU, este pedido contiene platos artesanales perecederos para consumo inmediato. No aplica derecho de desistimiento una vez iniciado el cocinado.</span>
+          </div>
+
+          {/* Primera Capa Informativa de Protección de Datos (RGPD UE 2016/679) */}
+          <div className="rgpd-first-layer-card">
+            <div className="rgpd-row">
+              <span className="rgpd-tag">Responsable:</span>
+              <span>Obento Japanese Food · C/ Amargura 3, 30830 La Ñora (Murcia)</span>
+            </div>
+            <div className="rgpd-row">
+              <span className="rgpd-tag">Finalidad:</span>
+              <span>Gestión, preparación y entrega de tu pedido, facturación y contacto operativo.</span>
+            </div>
+            <div className="rgpd-row">
+              <span className="rgpd-tag">Legitimación:</span>
+              <span>Ejecución del contrato de compraventa y cumplimiento de obligaciones legales.</span>
+            </div>
+            <div className="rgpd-row">
+              <span className="rgpd-tag">Derechos:</span>
+              <span>Acceso, rectificación y supresión enviando un correo a <em>privacidad@obentojapanesefood.es</em>.</span>
+            </div>
+          </div>
+
+          {/* Checkbox Obligatorio de Aceptación (Desmarcado por defecto) */}
+          <div className="checkout-privacy-checkbox-wrap">
+            <label className="checkout-privacy-label">
+              <input
+                type="checkbox"
+                checked={aceptaTerminos}
+                onChange={(e) => setAceptaTerminos(e.target.checked)}
+                className="checkout-privacy-input"
+                disabled={loading}
+              />
+              <span className="checkout-privacy-text">
+                He leído y acepto la{' '}
+                <button
+                  type="button"
+                  className="legal-inline-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.dispatchEvent(new CustomEvent('open_legal_modal', { detail: { tab: 'privacidad' } }));
+                  }}
+                >
+                  Política de Privacidad
+                </button>{' '}
+                y las{' '}
+                <button
+                  type="button"
+                  className="legal-inline-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.dispatchEvent(new CustomEvent('open_legal_modal', { detail: { tab: 'condiciones' } }));
+                  }}
+                >
+                  Condiciones Generales de Contratación
+                </button>
+                .*
+              </span>
+            </label>
           </div>
 
           <button
             type="submit"
-            className="btn-primary btn-block checkout-submit-btn"
+            className={`btn-primary btn-block checkout-submit-btn ${!aceptaTerminos ? 'btn-needs-consent' : ''}`}
             disabled={loading}
           >
             {loading ? (

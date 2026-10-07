@@ -1,4 +1,17 @@
 // Utilidad de Analíticas y Seguimiento de Conversión para Obento Takeaway
+// Cumple con la normativa AEPD y LSSI-CE Art. 22.2 (Bloqueo previo al consentimiento)
+
+function hasAnalyticsConsent() {
+  if (typeof window === 'undefined') return false;
+  try {
+    const raw = localStorage.getItem('obento_cookie_consent');
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return Boolean(parsed && parsed.analytics === true);
+  } catch {
+    return false;
+  }
+}
 
 function getSessionId() {
   if (typeof window === 'undefined') return 'server_session';
@@ -16,6 +29,12 @@ function getSessionId() {
 
 export function trackEvent(tipo, data = {}) {
   if (typeof window === 'undefined') return;
+
+  // VERIFICACIÓN ESTRICTA DE CONSENTIMIENTO (LSSI-CE Art. 22.2 / AEPD)
+  if (!hasAnalyticsConsent()) {
+    // Si el usuario no ha otorgado consentimiento expreso para analítica, abortar de forma silenciosa
+    return;
+  }
 
   const payload = {
     sessionId: getSessionId(),
@@ -58,21 +77,20 @@ export function trackAddToCart(dish, cantidad = 1, totalCarrito = 0, totalCount 
     totalCarrito: totalCarrito,
     metadata: {
       precio: dish.precio,
-      categoria: dish.cat,
-      sub: dish.sub
+      cantidad: cantidad
     }
   });
 }
 
-export function trackCartView(totalCarrito = 0, totalCount = 0) {
-  trackEvent('cart_view', {
+export function trackCartView(totalCount = 0, totalCarrito = 0) {
+  trackEvent('view_cart', {
     pagina: window.location.pathname,
     cantidadItems: totalCount,
     totalCarrito: totalCarrito
   });
 }
 
-export function trackCheckoutOpen(totalCarrito = 0, totalCount = 0) {
+export function trackCheckoutOpen(totalCount = 0, totalCarrito = 0) {
   trackEvent('checkout_open', {
     pagina: window.location.pathname,
     cantidadItems: totalCount,
@@ -83,12 +101,12 @@ export function trackCheckoutOpen(totalCarrito = 0, totalCount = 0) {
 export function trackOrderCompleted(pedido) {
   trackEvent('order_completed', {
     pagina: window.location.pathname,
-    cantidadItems: Array.isArray(pedido.items) ? pedido.items.length : 0,
-    totalCarrito: Number(pedido.total) || 0,
+    cantidadItems: Array.isArray(pedido?.items) ? pedido.items.length : 0,
+    totalCarrito: typeof pedido?.total === 'number' ? pedido.total : 0,
     metadata: {
-      numero_pedido: pedido.numero_pedido,
-      metodo_pago: pedido.metodo_pago,
-      hora_recogida: pedido.hora_recogida
+      numeroPedido: pedido?.numero_pedido,
+      tipoEntrega: pedido?.tipo_entrega,
+      metodoPago: pedido?.metodo_pago
     }
   });
 }

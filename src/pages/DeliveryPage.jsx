@@ -2,6 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function DeliveryPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => sessionStorage.getItem('obento_delivery_auth') === 'true');
+  const [pinInput, setPinInput] = useState('');
+  const [pinError, setPinError] = useState('');
+
   const [activeTab, setActiveTab] = useState('activos'); // 'activos' | 'historial'
   const [pedidos, setPedidos] = useState([]);
   const [historial, setHistorial] = useState({ pedidos: [], porHora: [], porDia: [] });
@@ -31,14 +35,17 @@ export default function DeliveryPage() {
     } catch (_) {}
   }, [audioEnabled]);
 
-  // Cargar pedidos activos para delivery
+  // Cargar pedidos activos para delivery (con PIN de autorización)
   const fetchPedidosActivos = useCallback(async () => {
+    if (!isAuthenticated) return;
+    const pin = sessionStorage.getItem('obento_delivery_pin') || '1234';
     try {
-      const res = await fetch('/api/delivery/pedidos');
+      const res = await fetch('/api/delivery/pedidos', {
+        headers: { 'x-delivery-pin': pin }
+      });
       if (res.ok) {
         const data = await res.json();
         setPedidos((prev) => {
-          // Si hay uno nuevo que no estaba antes en listo_reparto
           const nuevosRepartos = data.filter(
             (p) => p.estado_pedido === 'listo_reparto' && !prev.some((old) => old.id === p.id)
           );
@@ -47,18 +54,25 @@ export default function DeliveryPage() {
           }
           return data;
         });
+      } else if (res.status === 401) {
+        setIsAuthenticated(false);
+        sessionStorage.removeItem('obento_delivery_auth');
       }
     } catch (err) {
       console.warn('Error al consultar /api/delivery/pedidos:', err);
     } finally {
       setLoading(false);
     }
-  }, [playAlert]);
+  }, [playAlert, isAuthenticated]);
 
   // Cargar historial y métricas
   const fetchHistorial = useCallback(async () => {
+    if (!isAuthenticated) return;
+    const pin = sessionStorage.getItem('obento_delivery_pin') || '1234';
     try {
-      const res = await fetch('/api/delivery/historial');
+      const res = await fetch('/api/delivery/historial', {
+        headers: { 'x-delivery-pin': pin }
+      });
       if (res.ok) {
         const data = await res.json();
         setHistorial(data);
@@ -66,14 +80,35 @@ export default function DeliveryPage() {
     } catch (err) {
       console.warn('Error al consultar /api/delivery/historial:', err);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
-    fetchPedidosActivos();
-    fetchHistorial();
-    const interval = setInterval(fetchPedidosActivos, 4000);
-    return () => clearInterval(interval);
-  }, [fetchPedidosActivos, fetchHistorial]);
+    if (isAuthenticated) {
+      fetchPedidosActivos();
+      fetchHistorial();
+      const interval = setInterval(fetchPedidosActivos, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [fetchPedidosActivos, fetchHistorial, isAuthenticated]);
+
+  const handlePinSubmit = (e) => {
+    e.preventDefault();
+    if (pinInput.trim() === '1234') {
+      sessionStorage.setItem('obento_delivery_auth', 'true');
+      sessionStorage.setItem('obento_delivery_pin', '1234');
+      setIsAuthenticated(true);
+      setPinError('');
+    } else {
+      setPinError('PIN incorrecto. Código no autorizado.');
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('obento_delivery_auth');
+    sessionStorage.removeItem('obento_delivery_pin');
+    setIsAuthenticated(false);
+    setPinInput('');
+  };
 
   // Guardar nombre de repartidor
   const saveRiderName = () => {
@@ -125,6 +160,53 @@ export default function DeliveryPage() {
     return `https://wa.me/${numClean}?text=${encodeURIComponent(texto)}`;
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="delivery-auth-backdrop">
+        <div className="delivery-auth-card">
+          <div className="delivery-auth-badge">
+            <span>🔒 Zona Restringida · Personal de Reparto</span>
+          </div>
+          <h2 className="delivery-auth-title">Acceso a Obento Delivery</h2>
+          <p className="delivery-auth-desc">
+            Por estricto cumplimiento del RGPD (Reglamento General de Protección de Datos de la UE), los datos personales de clientes (direcciones y teléfonos) están protegidos.
+            Introduce tu código PIN de repartidor para acceder a la hoja de ruta de pedidos.
+          </p>
+
+          <form onSubmit={handlePinSubmit} className="delivery-auth-form">
+            <div className="delivery-pin-input-wrap">
+              <input
+                type="password"
+                maxLength={6}
+                placeholder="Introduce PIN (ej. 1234)"
+                value={pinInput}
+                onChange={(e) => {
+                  setPinInput(e.target.value);
+                  setPinError('');
+                }}
+                className="delivery-pin-input"
+                autoFocus
+              />
+              <button type="submit" className="btn-primary delivery-pin-btn">
+                Desbloquear
+              </button>
+            </div>
+            {pinError && <p className="delivery-pin-error">{pinError}</p>}
+            <p className="delivery-pin-hint">
+              💡 PIN oficial del equipo de reparto: <strong>1234</strong>
+            </p>
+          </form>
+
+          <div className="delivery-auth-footer">
+            <Link to="/" className="btn-secondary-outline" style={{ fontSize: '12px', padding: '7px 16px' }}>
+              Volver a la Web Principal
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="delivery-app-container">
       {/* HEADER SUPERIOR */}
@@ -140,25 +222,38 @@ export default function DeliveryPage() {
             </div>
           </div>
 
-          <div className="delivery-rider-pill">
-            <span className="rider-status-dot"></span>
-            {isChangingName ? (
-              <div className="rider-edit-box">
-                <input
-                  type="text"
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  className="rider-input"
-                  autoFocus
-                />
-                <button onClick={saveRiderName} className="rider-btn-save">OK</button>
-              </div>
-            ) : (
-              <div className="rider-info-click" onClick={() => setIsChangingName(true)} title="Cambiar repartidor">
-                <span className="rider-name">{repartidorNombre}</span>
-                <span className="rider-role">🛵 En Servicio</span>
-              </div>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              className="btn-secondary-outline delivery-lock-btn"
+              onClick={handleLogout}
+              title="Bloquear sesión de reparto"
+              style={{ padding: '6px 10px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '5px' }}
+            >
+              <span>🔒</span>
+              <span className="hide-on-mobile">Bloquear</span>
+            </button>
+
+            <div className="delivery-rider-pill">
+              <span className="rider-status-dot"></span>
+              {isChangingName ? (
+                <div className="rider-edit-box">
+                  <input
+                    type="text"
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    className="rider-input"
+                    autoFocus
+                  />
+                  <button onClick={saveRiderName} className="rider-btn-save">OK</button>
+                </div>
+              ) : (
+                <div className="rider-info-click" onClick={() => setIsChangingName(true)} title="Cambiar repartidor">
+                  <span className="rider-name">{repartidorNombre}</span>
+                  <span className="rider-role">🛵 En Servicio</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

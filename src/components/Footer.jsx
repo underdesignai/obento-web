@@ -5,7 +5,7 @@ function telHref(tel) {
   return 'tel:' + tel.replace(/[^\d+]/g, '');
 }
 
-export default function Footer({ onOpenAllergens }) {
+export default function Footer({ onOpenAllergens, onOpenLegal }) {
   const phoneHref = telHref(ABOUT_INFO.telefono);
 
   const scrollToMenu = (e) => {
@@ -147,16 +147,63 @@ export default function Footer({ onOpenAllergens }) {
         {/* Bottom bar */}
         <div className="footer-bottom">
           <p className="footer-copy">
-            © {new Date().getFullYear()} Obento Japanese Food. Todos los derechos reservados. Cocina japonesa para llevar y recoger en La Ñora, Murcia.
+            © {new Date().getFullYear()} Obento Japanese Food. Todos los derechos reservados. Cocina japonesa para llevar y recoger en Calle Amargura 3, La Ñora (Murcia).
           </p>
           <div className="footer-legal">
-            <a href="/delivery" style={{ color: '#c81e22', textDecoration: 'none', fontWeight: 'bold' }}>🛵 App Repartidores</a>
+            <button
+              type="button"
+              className="legal-footer-link"
+              onClick={() => {
+                if (onOpenLegal) onOpenLegal('aviso-legal');
+                else window.dispatchEvent(new CustomEvent('open_legal_modal', { detail: { tab: 'aviso-legal' } }));
+              }}
+            >
+              Aviso Legal
+            </button>
             <span className="legal-sep">·</span>
-            <span className="legal-link">Aviso Legal</span>
+            <button
+              type="button"
+              className="legal-footer-link"
+              onClick={() => {
+                if (onOpenLegal) onOpenLegal('privacidad');
+                else window.dispatchEvent(new CustomEvent('open_legal_modal', { detail: { tab: 'privacidad' } }));
+              }}
+            >
+              Privacidad (RGPD)
+            </button>
             <span className="legal-sep">·</span>
-            <span className="legal-link">Privacidad</span>
+            <button
+              type="button"
+              className="legal-footer-link"
+              onClick={() => {
+                if (onOpenLegal) onOpenLegal('condiciones');
+                else window.dispatchEvent(new CustomEvent('open_legal_modal', { detail: { tab: 'condiciones' } }));
+              }}
+            >
+              Condiciones de Venta
+            </button>
             <span className="legal-sep">·</span>
-            <span className="legal-link">Cookies</span>
+            <button
+              type="button"
+              className="legal-footer-link"
+              onClick={() => {
+                if (onOpenLegal) onOpenLegal('cookies');
+                else window.dispatchEvent(new CustomEvent('open_legal_modal', { detail: { tab: 'cookies' } }));
+              }}
+            >
+              Política de Cookies
+            </button>
+            <span className="legal-sep">·</span>
+            <button
+              type="button"
+              className="legal-footer-link cookie-config-footer-btn"
+              onClick={() => {
+                if (window.openCookieSettings) window.openCookieSettings();
+                else window.dispatchEvent(new CustomEvent('open_cookie_settings'));
+              }}
+            >
+              🍪 Configurar Cookies
+            </button>
           </div>
         </div>
       </div>

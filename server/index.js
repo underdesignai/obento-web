@@ -434,8 +434,17 @@ app.patch('/api/pedidos/:id/status', async (req, res) => {
   }
 });
 
-// 7. ENDPOINTS ESPECÍFICOS PARA LA APP DE DELIVERY
-app.get('/api/delivery/pedidos', async (req, res) => {
+// 7. ENDPOINTS ESPECÍFICOS PARA LA APP DE DELIVERY (Protegidos conforme a RGPD Art. 32)
+const verifyDeliveryPin = (req, res, next) => {
+  const expectedPin = process.env.DELIVERY_PIN || '1234';
+  const clientPin = req.headers['x-delivery-pin'] || req.query.pin;
+  if (clientPin && String(clientPin) === String(expectedPin)) {
+    return next();
+  }
+  return res.status(401).json({ error: 'Acceso no autorizado. Se requiere PIN de seguridad para acceder a los datos de entrega.' });
+};
+
+app.get('/api/delivery/pedidos', verifyDeliveryPin, async (req, res) => {
   try {
     try {
       const todos = await obtenerPedidosDb({ limit: 100 });
@@ -456,7 +465,7 @@ app.get('/api/delivery/pedidos', async (req, res) => {
   }
 });
 
-app.get('/api/delivery/historial', async (req, res) => {
+app.get('/api/delivery/historial', verifyDeliveryPin, async (req, res) => {
   try {
     try {
       const historial = await obtenerHistorialDeliveryDb();
