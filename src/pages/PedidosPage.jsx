@@ -199,7 +199,7 @@ export default function PedidosPage() {
     const element = document.getElementById(`sec-${id}`);
     if (element) {
       const isMobile = window.innerWidth <= 768;
-      const yOffset = isMobile ? -115 : -135;
+      const yOffset = isMobile ? -100 : -118;
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -211,7 +211,7 @@ export default function PedidosPage() {
 
     const handleScroll = () => {
       const isMobile = window.innerWidth <= 768;
-      const threshold = window.pageYOffset + (isMobile ? 130 : 155);
+      const threshold = window.pageYOffset + (isMobile ? 110 : 130);
 
       for (let i = MENU_SECTIONS.length - 1; i >= 0; i--) {
         const sec = MENU_SECTIONS[i];
@@ -332,7 +332,6 @@ export default function PedidosPage() {
       <nav className="pedidos-sticky-nav-bar" ref={stickyNavRef} aria-label="Categorías de la carta">
         <div className="pedidos-sticky-nav-inner">
           {MENU_SECTIONS.map((sec) => {
-            const count = platosLista.filter(sec.filter).length;
             const isActive = activeSectionId === sec.id;
             return (
               <button
@@ -344,7 +343,6 @@ export default function PedidosPage() {
               >
                 <span className="sticky-cat-icon">{sec.icon}</span>
                 <span className="sticky-cat-name">{sec.label}</span>
-                <span className="sticky-cat-count">{count}</span>
               </button>
             );
           })}
