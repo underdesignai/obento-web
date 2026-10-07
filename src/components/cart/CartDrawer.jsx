@@ -167,7 +167,7 @@ export default function CartDrawer() {
                   <div style={{ display: 'flex', gap: 6 }}>
                     <input
                       type="text"
-                      placeholder="Código cupón (ej: OBENTO10)"
+                      placeholder="CODIGO CUPON"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                       onKeyDown={(e) => {
