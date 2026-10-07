@@ -199,7 +199,7 @@ export default function PedidosPage() {
     const element = document.getElementById(`sec-${id}`);
     if (element) {
       const isMobile = window.innerWidth <= 768;
-      const yOffset = isMobile ? -100 : -118;
+      const yOffset = isMobile ? -130 : -118;
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -211,7 +211,7 @@ export default function PedidosPage() {
 
     const handleScroll = () => {
       const isMobile = window.innerWidth <= 768;
-      const threshold = window.pageYOffset + (isMobile ? 110 : 130);
+      const threshold = window.pageYOffset + (isMobile ? 135 : 130);
 
       for (let i = MENU_SECTIONS.length - 1; i >= 0; i--) {
         const sec = MENU_SECTIONS[i];

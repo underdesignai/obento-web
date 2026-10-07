@@ -4769,15 +4769,16 @@ img {
 
 @media (max-width: 768px) {
   .pedidos-sticky-nav-bar {
-    top: 60px; /* Ajuste para header en pantalla móvil/tablet */
-    padding: 3px 0;
+    top: 56px; /* Ajuste para header en pantalla móvil */
+    padding: 5px 3px;
   }
 }
 
 .pedidos-sticky-nav-inner {
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 6px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
@@ -4810,16 +4811,51 @@ img {
   user-select: none;
 }
 
+/* En móvil: Cuadrícula exacta de 2 filas (4 columnas x 2 filas = 8 categorías 100% visibles sin scroll) */
 @media (max-width: 768px) {
   .pedidos-sticky-nav-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 4px;
-    padding: 2px 8px;
+    padding: 0 4px;
+    overflow-x: visible;
   }
 
   .sticky-cat-btn {
-    padding: 4px 9px;
+    width: 100%;
+    min-width: 0;
+    padding: 5px 2px;
+    font-size: 10.5px;
+    gap: 3px;
+    border-radius: 8px;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .sticky-cat-icon {
     font-size: 11px;
-    gap: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .sticky-cat-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
+}
+
+@media (max-width: 360px) {
+  .sticky-cat-btn {
+    padding: 4px 1px;
+    font-size: 9.5px;
+    gap: 2px;
+  }
+
+  .sticky-cat-icon {
+    font-size: 10px;
   }
 }
 
