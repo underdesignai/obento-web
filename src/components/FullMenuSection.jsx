@@ -11,7 +11,23 @@ export default function FullMenuSection({ onOpenAllergens }) {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setPlatosLista(data);
+          const cleaned = data.map((d) => ({
+            ...d,
+            nombre: (d.nombre || '')
+              .replace(/salm\?n/gi, 'salmón')
+              .replace(/at\?n/gi, 'atún')
+              .replace(/lim\?n/gi, 'limón')
+              .replace(/J\?netsu/g, 'Jōnetsu'),
+            descripcion: (d.descripcion || '')
+              .replace(/salm\?n/gi, 'salmón')
+              .replace(/at\?n/gi, 'atún')
+              .replace(/az\?car/gi, 'azúcar')
+              .replace(/esp\?rrago/gi, 'espárrago')
+              .replace(/s\?samo/gi, 'sésamo')
+              .replace(/holand\?s/gi, 'holandés')
+              .replace(/acompa\?ado/gi, 'acompañado')
+          }));
+          setPlatosLista(cleaned);
         }
       })
       .catch(() => {});

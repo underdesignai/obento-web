@@ -4488,9 +4488,20 @@ img {
 }
 
 @media (max-width: 768px) {
+  .site-header.pedidos-header,
+  .pedidos-header {
+    height: 58px !important;
+    min-height: 58px !important;
+  }
+
   .pedidos-header .header-container {
-    padding: 10px 14px;
+    height: 58px !important;
+    padding: 0 12px;
     gap: 8px;
+  }
+
+  .pedidos-header .nav-logo {
+    height: 34px !important;
   }
 
   .nav-back-text-full {
@@ -4504,18 +4515,18 @@ img {
   }
 
   .nav-back-btn {
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 5px 10px;
+    font-size: 11.5px;
   }
 
   .nav-allergen-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
   }
 
   .nav-cart-btn {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 5px 11px;
+    font-size: 11.5px;
   }
 
   /* Ocultar hero banner en móviles para ir directo a la carta */
@@ -4769,8 +4780,12 @@ img {
 
 @media (max-width: 768px) {
   .pedidos-sticky-nav-bar {
-    top: 56px; /* Ajuste para header en pantalla móvil */
-    padding: 5px 3px;
+    top: 58px !important; /* Exactamente alineado al borde inferior del header de 58px */
+    background: #14110e !important; /* 100% opaco para que nada se transparente por detrás al hacer scroll */
+    padding: 6px 3px 7px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(200, 30, 34, 0.45);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
   }
 }
 

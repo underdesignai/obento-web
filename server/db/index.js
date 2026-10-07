@@ -35,6 +35,21 @@ export async function initDatabase() {
       await client.query(schemaSql);
       isDbInitialized = true;
       console.log('✅ [PostgreSQL] Tablas inicializadas y listas para Obento.');
+
+      // Reparación automática de acentos dañados con '?' en MenuItem (heredados de codificación previa)
+      try {
+        await client.query(`
+          UPDATE "MenuItem" SET nombre = REPLACE(nombre, 'salm?n', 'salmón'), descripcion = REPLACE(descripcion, 'salm?n', 'salmón') WHERE nombre LIKE '%salm?n%' OR descripcion LIKE '%salm?n%';
+          UPDATE "MenuItem" SET nombre = REPLACE(nombre, 'at?n', 'atún'), descripcion = REPLACE(descripcion, 'at?n', 'atún') WHERE nombre LIKE '%at?n%' OR descripcion LIKE '%at?n%';
+          UPDATE "MenuItem" SET nombre = REPLACE(nombre, 'lim?n', 'limón'), descripcion = REPLACE(descripcion, 'lim?n', 'limón') WHERE nombre LIKE '%lim?n%' OR descripcion LIKE '%lim?n%';
+          UPDATE "MenuItem" SET nombre = REPLACE(nombre, 'J?netsu', 'Jōnetsu'), descripcion = REPLACE(descripcion, 'J?netsu', 'Jōnetsu') WHERE nombre LIKE '%J?netsu%' OR descripcion LIKE '%J?netsu%';
+          UPDATE "MenuItem" SET descripcion = REPLACE(descripcion, 'az?car', 'azúcar') WHERE descripcion LIKE '%az?car%';
+          UPDATE "MenuItem" SET descripcion = REPLACE(descripcion, 'esp?rrago', 'espárrago') WHERE descripcion LIKE '%esp?rrago%';
+          UPDATE "MenuItem" SET descripcion = REPLACE(descripcion, 's?samo', 'sésamo') WHERE descripcion LIKE '%s?samo%';
+          UPDATE "MenuItem" SET descripcion = REPLACE(descripcion, 'holand?s', 'holandés') WHERE descripcion LIKE '%holand?s%';
+          UPDATE "MenuItem" SET descripcion = REPLACE(descripcion, 'acompa?ado', 'acompañado') WHERE descripcion LIKE '%acompa?ado%';
+        `);
+      } catch (_) {}
     } finally {
       client.release();
     }
@@ -42,6 +57,25 @@ export async function initDatabase() {
     console.warn('⚠️ [PostgreSQL] No se pudo conectar de inmediato a PostgreSQL:', err.message);
     console.warn('👉 Asegúrate de configurar DATABASE_URL o PGHOST/PGUSER en el archivo .env.');
   }
+}
+
+// Función auxiliar para reparar acentos dañados en cualquier texto
+export function fixCorruptedAccents(str) {
+  if (!str || typeof str !== 'string') return str || '';
+  return str
+    .replace(/salm\?n/gi, 'salmón')
+    .replace(/at\?n/gi, 'atún')
+    .replace(/lim\?n/gi, 'limón')
+    .replace(/J\?netsu/g, 'Jōnetsu')
+    .replace(/az\?car/gi, 'azúcar')
+    .replace(/esp\?rrago/gi, 'espárrago')
+    .replace(/s\?samo/gi, 'sésamo')
+    .replace(/holand\?s/gi, 'holandés')
+    .replace(/acompa\?ado/gi, 'acompañado')
+    .replace(/C\?digo/gi, 'Código')
+    .replace(/cup\?n/gi, 'cupón')
+    .replace(/direcci\?n/gi, 'dirección')
+    .replace(/tel\?fono/gi, 'teléfono');
 }
 
 // Genera un número legible de pedido: ej. OB-8472
@@ -363,8 +397,8 @@ export async function obtenerCartaDb() {
       cat: row.categoria,
       categoria: row.categoria,
       ...(row.sub ? { sub: row.sub } : {}),
-      nombre: row.nombre,
-      descripcion: row.descripcion || '',
+      nombre: fixCorruptedAccents(row.nombre),
+      descripcion: fixCorruptedAccents(row.descripcion || ''),
       precio: Number(row.precio),
       imagen: row.imagen || '/images/placeholder.jpg',
       alergenos: row.alergenos ? row.alergenos.split(',').map(s => s.trim()).filter(Boolean) : [],
