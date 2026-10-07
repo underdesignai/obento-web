@@ -57,6 +57,9 @@ export async function crearPedidoEnDb({
   cliente_telefono,
   cliente_email,
   tipo_entrega = 'recogida_local',
+  direccion_entrega = null,
+  direccion_detalles = null,
+  codigo_postal = null,
   hora_recogida,
   notas,
   metodo_pago,
@@ -70,14 +73,30 @@ export async function crearPedidoEnDb({
   try {
     await client.query('BEGIN');
 
+    // Comprobar y asegurar columnas si la tabla ya existía
+    try {
+      await client.query(`
+        ALTER TABLE pedidos 
+        ADD COLUMN IF NOT EXISTS direccion_entrega TEXT,
+        ADD COLUMN IF NOT EXISTS direccion_detalles VARCHAR(255),
+        ADD COLUMN IF NOT EXISTS codigo_postal VARCHAR(10),
+        ADD COLUMN IF NOT EXISTS repartidor_id VARCHAR(50),
+        ADD COLUMN IF NOT EXISTS repartidor_nombre VARCHAR(100),
+        ADD COLUMN IF NOT EXISTS fecha_salida_reparto TIMESTAMP WITH TIME ZONE,
+        ADD COLUMN IF NOT EXISTS fecha_entregado TIMESTAMP WITH TIME ZONE,
+        ADD COLUMN IF NOT EXISTS tiempo_entrega_minutos INTEGER;
+      `);
+    } catch (_) {}
+
     const numero_pedido = generarNumeroPedido();
 
     const insertPedidoQuery = `
       INSERT INTO pedidos (
         numero_pedido, cliente_nombre, cliente_telefono, cliente_email,
-        tipo_entrega, hora_recogida, notas, metodo_pago, estado_pago,
+        tipo_entrega, direccion_entrega, direccion_detalles, codigo_postal,
+        hora_recogida, notas, metodo_pago, estado_pago,
         estado_pedido, total, stripe_session_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING *;
     `;
 
@@ -87,6 +106,9 @@ export async function crearPedidoEnDb({
       cliente_telefono,
       cliente_email || null,
       tipo_entrega,
+      direccion_entrega || null,
+      direccion_detalles || null,
+      codigo_postal || null,
       hora_recogida || 'Lo antes posible',
       notas || null,
       metodo_pago,
@@ -188,15 +210,97 @@ export async function obtenerPedidosDb({ estado, soloPagados = false, limit = 10
 }
 
 // Actualizar estado del pedido (ej: monitor Takeaway marca 'en_preparacion', 'listo', 'entregado')
-export async function actualizarEstadoPedidoDb(id, nuevoEstado) {
+export async function actualizarEstadoPedidoDb(id, nuevoEstado, extraData = {}) {
+  let extraSets = '';
+  const values = [nuevoEstado, id];
+
+  if (nuevoEstado === 'en_camino') {
+    extraSets += `, fecha_salida_reparto = COALESCE(fecha_salida_reparto, CURRENT_TIMESTAMP)`;
+    if (extraData.repartidor_nombre) {
+      values.push(extraData.repartidor_nombre);
+      extraSets += `, repartidor_nombre = $${values.length}`;
+    }
+  } else if (nuevoEstado === 'entregado') {
+    extraSets += `, fecha_entregado = CURRENT_TIMESTAMP`;
+    extraSets += `, tiempo_entrega_minutos = ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - COALESCE(fecha_salida_reparto, created_at))) / 60)`;
+  }
+
   const sql = `
     UPDATE pedidos
-    SET estado_pedido = $1, updated_at = CURRENT_TIMESTAMP
+    SET estado_pedido = $1, updated_at = CURRENT_TIMESTAMP ${extraSets}
     WHERE id = $2 OR numero_pedido = $2::text
     RETURNING *;
   `;
-  const res = await pool.query(sql, [nuevoEstado, id]);
+  const res = await pool.query(sql, values);
   return res.rows[0];
+}
+
+// Historial y métricas de delivery agrupadas por día y por hora
+export async function obtenerHistorialDeliveryDb() {
+  try {
+    const listadoSql = `
+      SELECT 
+        p.*,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', pi.id,
+              'nombre', pi.nombre,
+              'cantidad', pi.cantidad,
+              'precio_unitario', pi.precio_unitario,
+              'subtotal', pi.subtotal
+            )
+          ) FILTER (WHERE pi.id IS NOT NULL),
+          '[]'
+        ) AS items
+      FROM pedidos p
+      LEFT JOIN pedido_items pi ON p.id = pi.pedido_id
+      WHERE p.tipo_entrega IN ('domicilio', 'delivery')
+      GROUP BY p.id
+      ORDER BY p.created_at DESC
+      LIMIT 200;
+    `;
+    const resList = await pool.query(listadoSql);
+
+    // Métricas por hora del día
+    const metricasHoraSql = `
+      SELECT 
+        EXTRACT(HOUR FROM created_at) AS hora,
+        COUNT(*) AS total_pedidos,
+        ROUND(AVG(COALESCE(tiempo_entrega_minutos, 25)), 1) AS promedio_minutos,
+        SUM(total) AS total_facturado
+      FROM pedidos
+      WHERE tipo_entrega IN ('domicilio', 'delivery') AND estado_pedido = 'entregado'
+      GROUP BY EXTRACT(HOUR FROM created_at)
+      ORDER BY hora ASC;
+    `;
+    const resHoras = await pool.query(metricasHoraSql);
+
+    // Métricas por día
+    const metricasDiaSql = `
+      SELECT 
+        TO_CHAR(created_at, 'YYYY-MM-DD') AS fecha,
+        COUNT(*) AS total_pedidos,
+        COUNT(CASE WHEN estado_pedido = 'entregado' THEN 1 END) AS entregados,
+        ROUND(AVG(COALESCE(tiempo_entrega_minutos, 25)), 1) AS promedio_minutos,
+        SUM(total) AS total_facturado
+      FROM pedidos
+      WHERE tipo_entrega IN ('domicilio', 'delivery')
+      GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
+      ORDER BY fecha DESC
+      LIMIT 14;
+    `;
+    const resDias = await pool.query(metricasDiaSql);
+
+    return {
+      pedidos: resList.rows,
+      porHora: resHoras.rows,
+      porDia: resDias.rows
+    };
+  } catch (err) {
+    console.error('Error al obtener historial delivery de PostgreSQL:', err);
+    throw err;
+  }
 }
 
 // Actualizar estado de pago (ej: cuando Stripe confirma el cobro)

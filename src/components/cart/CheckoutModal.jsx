@@ -30,6 +30,10 @@ export default function CheckoutModal({ onOrderSuccess }) {
     clearCart
   } = useCart();
 
+  const [tipoEntrega, setTipoEntrega] = useState('recogida_local'); // 'recogida_local' | 'domicilio'
+  const [direccionEntrega, setDireccionEntrega] = useState('');
+  const [direccionDetalles, setDireccionDetalles] = useState('');
+  const [codigoPostal, setCodigoPostal] = useState('30107'); // Default La Ñora / Murcia
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
@@ -79,6 +83,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
       return;
     }
 
+    if (tipoEntrega === 'domicilio' && !direccionEntrega.trim()) {
+      setErrorMsg('Por favor introduce la dirección completa para el reparto a domicilio.');
+      return;
+    }
+
     if (cart.length === 0) {
       setErrorMsg('Tu cesta está vacía.');
       return;
@@ -105,7 +114,10 @@ export default function CheckoutModal({ onOrderSuccess }) {
       cliente_nombre: nombre.trim(),
       cliente_telefono: telefono.trim(),
       cliente_email: email.trim() || null,
-      tipo_entrega: 'recogida_local',
+      tipo_entrega: tipoEntrega,
+      direccion_entrega: tipoEntrega === 'domicilio' ? direccionEntrega.trim() : null,
+      direccion_detalles: tipoEntrega === 'domicilio' ? direccionDetalles.trim() : null,
+      codigo_postal: tipoEntrega === 'domicilio' ? codigoPostal.trim() : null,
       hora_recogida: horaRecogida,
       notas: `${necesitaCubiertos ? 'Incluir palillos y soja. ' : 'Sin palillos. '}${notas}`.trim(),
       metodo_pago: metodoPago,
@@ -178,7 +190,13 @@ export default function CheckoutModal({ onOrderSuccess }) {
       <div className="checkout-modal" onClick={(e) => e.stopPropagation()}>
         <div className="checkout-modal-header">
           <div>
-            <span className="checkout-badge">Takeaway · Recogida en Local</span>
+            <span className="checkout-badge" style={{
+              background: tipoEntrega === 'domicilio' ? 'rgba(59,130,246,0.15)' : 'rgba(200,30,34,0.15)',
+              color: tipoEntrega === 'domicilio' ? '#60a5fa' : '#c81e22',
+              borderColor: tipoEntrega === 'domicilio' ? 'rgba(59,130,246,0.3)' : 'rgba(200,30,34,0.3)'
+            }}>
+              {tipoEntrega === 'domicilio' ? '🛵 Reparto · Entrega a Domicilio' : '🥡 Takeaway · Recogida en Local'}
+            </span>
             <h3 className="checkout-title">Finalizar Pedido</h3>
           </div>
           <button
@@ -203,8 +221,104 @@ export default function CheckoutModal({ onOrderSuccess }) {
         )}
 
         <form onSubmit={handleSubmit} className="checkout-form">
+          {/* Tipo de Pedido: Recogida o Reparto a Domicilio */}
+          <div className="form-section-title">1. Modalidad de Pedido</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '18px' }}>
+            <button
+              type="button"
+              onClick={() => setTipoEntrega('recogida_local')}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '12px 10px',
+                borderRadius: '10px',
+                border: tipoEntrega === 'recogida_local' ? '2px solid #c81e22' : '1px solid rgba(255,255,255,0.12)',
+                background: tipoEntrega === 'recogida_local' ? 'rgba(200,30,34,0.12)' : 'rgba(255,255,255,0.03)',
+                color: '#fff',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span style={{ fontSize: '20px' }}>🥡</span>
+              <span style={{ fontWeight: 700, fontSize: '13px' }}>Recogida en Tienda</span>
+              <span style={{ fontSize: '11px', color: '#a0998f' }}>Calle Mayor 45, La Ñora</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTipoEntrega('domicilio')}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '12px 10px',
+                borderRadius: '10px',
+                border: tipoEntrega === 'domicilio' ? '2px solid #c81e22' : '1px solid rgba(255,255,255,0.12)',
+                background: tipoEntrega === 'domicilio' ? 'rgba(200,30,34,0.12)' : 'rgba(255,255,255,0.03)',
+                color: '#fff',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              <span style={{ fontSize: '20px' }}>🛵</span>
+              <span style={{ fontWeight: 700, fontSize: '13px' }}>Entrega a Domicilio</span>
+              <span style={{ fontSize: '11px', color: '#4ade80' }}>Reparto oficial Obento</span>
+            </button>
+          </div>
+
+          {/* Formulario de Dirección de Entrega (si es delivery) */}
+          {tipoEntrega === 'domicilio' && (
+            <div style={{
+              background: 'rgba(200,30,34,0.06)',
+              border: '1px solid rgba(200,30,34,0.25)',
+              borderRadius: '12px',
+              padding: '14px',
+              marginBottom: '18px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: '#f3ede0', fontWeight: 600, fontSize: '13px' }}>
+                <span>📍 Dirección de Reparto (Verificada para Google Maps)</span>
+              </div>
+              <div className="form-field" style={{ marginBottom: '10px' }}>
+                <label>Calle, Avenida o Plaza y Número *</label>
+                <input
+                  type="text"
+                  required={tipoEntrega === 'domicilio'}
+                  placeholder="Ej. Calle Mayor, 12"
+                  value={direccionEntrega}
+                  onChange={(e) => setDireccionEntrega(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+              <div className="form-grid-2">
+                <div className="form-field">
+                  <label>Piso, Puerta, Bloque, Escalera</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. 2º B, Bloque A"
+                    value={direccionDetalles}
+                    onChange={(e) => setDireccionDetalles(e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Código Postal / Zona</label>
+                  <input
+                    type="text"
+                    placeholder="30107 (La Ñora/Murcia)"
+                    value={codigoPostal}
+                    onChange={(e) => setCodigoPostal(e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Datos de contacto */}
-          <div className="form-section-title">1. Datos de Contacto</div>
+          <div className="form-section-title">2. Datos de Contacto</div>
           <div className="form-grid-2">
             <div className="form-field">
               <label>Nombre y Apellidos *</label>
@@ -218,7 +332,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
               />
             </div>
             <div className="form-field">
-              <label>Teléfono móvil *</label>
+              <label>Teléfono móvil * (Para el repartidor)</label>
               <input
                 type="tel"
                 required
@@ -241,10 +355,14 @@ export default function CheckoutModal({ onOrderSuccess }) {
             />
           </div>
 
-          {/* Horario de recogida: DESPLEGABLE con Estilo y Temas de la Web */}
-          <div className="form-section-title" style={{ marginTop: '16px' }}>2. Horario de Recogida</div>
+          {/* Horario de recogida o entrega: DESPLEGABLE con Estilo y Temas de la Web */}
+          <div className="form-section-title" style={{ marginTop: '16px' }}>
+            {tipoEntrega === 'domicilio' ? '3. Horario de Entrega Deseado' : '3. Horario de Recogida en Local'}
+          </div>
           <div className="form-field">
-            <label>¿A qué hora recogerás tu pedido en La Ñora?</label>
+            <label>
+              {tipoEntrega === 'domicilio' ? '¿A qué hora deseas recibir tu pedido en tu domicilio?' : '¿A qué hora recogerás tu pedido en La Ñora?'}
+            </label>
 
             <div className="custom-dropdown-wrap">
               <button
@@ -443,11 +561,17 @@ export default function CheckoutModal({ onOrderSuccess }) {
                 />
                 <div className="payment-card-content">
                   <div className="payment-card-top">
-                    <span className="payment-title">Pagar en el Restaurante</span>
-                    <span className="payment-badge-local">Al Recoger</span>
+                    <span className="payment-title">
+                      {tipoEntrega === 'domicilio' ? 'Pagar en Efectivo al Repartidor' : 'Pagar en el Restaurante'}
+                    </span>
+                    <span className="payment-badge-local">
+                      {tipoEntrega === 'domicilio' ? 'En la Entrega' : 'Al Recoger'}
+                    </span>
                   </div>
                   <p className="payment-desc">
-                    Paga en efectivo o con tarjeta en el mostrador de Obento cuando vengas a por tu pedido.
+                    {tipoEntrega === 'domicilio'
+                      ? 'Paga en efectivo al repartidor de Obento cuando llegue a tu puerta con el pedido.'
+                      : 'Paga en efectivo o con tarjeta en el mostrador de Obento cuando vengas a por tu pedido.'}
                   </p>
                 </div>
               </div>
@@ -473,7 +597,9 @@ export default function CheckoutModal({ onOrderSuccess }) {
               </span>
             </div>
             <p className="checkout-location-info">
-              📍 Recogida en: Calle Mayor 45, La Ñora (Murcia)
+              {tipoEntrega === 'domicilio'
+                ? `🛵 Reparto a: ${direccionEntrega || 'Dirección indicada'} (${codigoPostal || '30107'}, Murcia)`
+                : '📍 Recogida en: Calle Mayor 45, La Ñora (Murcia)'}
             </p>
           </div>
 
@@ -492,7 +618,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
             ) : metodoPago === 'stripe' ? (
               <span>Proceder al Pago Seguro ({fmt(finalPrice)})</span>
             ) : (
-              <span>Confirmar Pedido Takeaway ({fmt(finalPrice)})</span>
+              <span>{tipoEntrega === 'domicilio' ? `Confirmar Pedido a Domicilio (${fmt(finalPrice)})` : `Confirmar Pedido Takeaway (${fmt(finalPrice)})`}</span>
             )}
           </button>
         </form>

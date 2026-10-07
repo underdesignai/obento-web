@@ -12,6 +12,8 @@ import AllergenModal from './components/AllergenModal';
 import Chatbot from './components/Chatbot';
 import PedidosPage from './pages/PedidosPage';
 import TrackingPage from './pages/TrackingPage';
+import DeliveryPage from './pages/DeliveryPage';
+import PwaInstallPrompt from './components/PwaInstallPrompt';
 import { CartProvider } from './context/CartContext';
 import { trackPageView } from './utils/analytics';
 
@@ -67,6 +69,9 @@ function HomeView() {
 
       {/* Floating Chatbot Assistant */}
       <Chatbot onOpenAllergens={() => setIsAllergenOpen(true)} />
+
+      {/* PWA Mobile Installation Prompt */}
+      <PwaInstallPrompt />
     </div>
   );
 }
@@ -86,11 +91,14 @@ export default function App() {
     <CartProvider>
       <BrowserRouter>
         <PageTracker />
+        <PwaInstallPrompt />
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/seguimiento" element={<TrackingPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
+          <Route path="/delivery" element={<DeliveryPage />} />
+          <Route path="/reparto" element={<DeliveryPage />} />
           {/* Fallback a home */}
           <Route path="*" element={<HomeView />} />
         </Routes>

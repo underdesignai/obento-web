@@ -17,7 +17,8 @@ import {
   validarCuponDb,
   incrementarUsoCuponDb,
   obtenerOfertasActivasDb,
-  obtenerBotWebConfigDb
+  obtenerBotWebConfigDb,
+  obtenerHistorialDeliveryDb
 } from './db/index.js';
 import { sendOrderConfirmedEmail, sendOrderReadyEmail } from './email.js';
 
@@ -122,6 +123,9 @@ app.post('/api/pedidos', async (req, res) => {
       cliente_telefono,
       cliente_email,
       tipo_entrega,
+      direccion_entrega,
+      direccion_detalles,
+      codigo_postal,
       hora_recogida,
       notas,
       metodo_pago,
@@ -133,11 +137,18 @@ app.post('/api/pedidos', async (req, res) => {
       return res.status(400).json({ error: 'Nombre, teléfono y al menos un plato son obligatorios.' });
     }
 
+    if (tipo_entrega === 'domicilio' && !direccion_entrega) {
+      return res.status(400).json({ error: 'La dirección de entrega es obligatoria para pedidos a domicilio.' });
+    }
+
     const payload = {
       cliente_nombre,
       cliente_telefono,
       cliente_email: cliente_email || null,
       tipo_entrega: tipo_entrega || 'recogida_local',
+      direccion_entrega: direccion_entrega || null,
+      direccion_detalles: direccion_detalles || null,
+      codigo_postal: codigo_postal || null,
       hora_recogida: hora_recogida || 'Lo antes posible',
       notas: notas || '',
       metodo_pago: metodo_pago || 'restaurante',
@@ -383,18 +394,18 @@ app.get('/api/pedidos/:idOrNumero', async (req, res) => {
   }
 });
 
-// 6. CAMBIAR ESTADO DE PEDIDO (Monitor Takeaway: 'en_preparacion', 'listo', 'entregado')
+// 6. CAMBIAR ESTADO DE PEDIDO (Monitor Takeaway & Delivery: 'en_preparacion', 'listo', 'listo_reparto', 'en_camino', 'entregado')
 app.patch('/api/pedidos/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { estado_pedido } = req.body;
+    const { estado_pedido, repartidor_nombre } = req.body;
 
     if (!estado_pedido) {
       return res.status(400).json({ error: 'estado_pedido es obligatorio.' });
     }
 
     try {
-      const pedido = await actualizarEstadoPedidoDb(id, estado_pedido);
+      const pedido = await actualizarEstadoPedidoDb(id, estado_pedido, { repartidor_nombre });
       if (estado_pedido === 'listo' && pedido?.cliente_email) {
         sendOrderReadyEmail(pedido.cliente_email, pedido).catch(() => {});
       }
@@ -403,6 +414,14 @@ app.patch('/api/pedidos/:id/status', async (req, res) => {
       const pMem = pedidosEnMemoria.find(p => p.id == id || p.numero_pedido === id);
       if (pMem) {
         pMem.estado_pedido = estado_pedido;
+        if (estado_pedido === 'en_camino') {
+          pMem.fecha_salida_reparto = pMem.fecha_salida_reparto || new Date().toISOString();
+          if (repartidor_nombre) pMem.repartidor_nombre = repartidor_nombre;
+        } else if (estado_pedido === 'entregado') {
+          pMem.fecha_entregado = new Date().toISOString();
+          const start = new Date(pMem.fecha_salida_reparto || pMem.created_at || Date.now()).getTime();
+          pMem.tiempo_entrega_minutos = Math.round((Date.now() - start) / 60000);
+        }
         if (estado_pedido === 'listo' && pMem.cliente_email) {
           sendOrderReadyEmail(pMem.cliente_email, pMem).catch(() => {});
         }
@@ -412,6 +431,56 @@ app.patch('/api/pedidos/:id/status', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar estado del pedido.' });
+  }
+});
+
+// 7. ENDPOINTS ESPECÍFICOS PARA LA APP DE DELIVERY
+app.get('/api/delivery/pedidos', async (req, res) => {
+  try {
+    try {
+      const todos = await obtenerPedidosDb({ limit: 100 });
+      const delivery = todos.filter(p => 
+        (p.tipo_entrega === 'domicilio' || p.tipo_entrega === 'delivery') &&
+        ['listo_reparto', 'en_camino', 'listo', 'en_preparacion'].includes(p.estado_pedido)
+      );
+      return res.json(delivery);
+    } catch (dbErr) {
+      const memDelivery = pedidosEnMemoria.filter(p => 
+        (p.tipo_entrega === 'domicilio' || p.tipo_entrega === 'delivery') &&
+        ['listo_reparto', 'en_camino', 'listo', 'en_preparacion'].includes(p.estado_pedido)
+      );
+      return res.json(memDelivery);
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener pedidos de delivery.' });
+  }
+});
+
+app.get('/api/delivery/historial', async (req, res) => {
+  try {
+    try {
+      const historial = await obtenerHistorialDeliveryDb();
+      return res.json(historial);
+    } catch (dbErr) {
+      // Mock de historial en memoria para desarrollo
+      const memEntregados = pedidosEnMemoria.filter(p => 
+        p.tipo_entrega === 'domicilio' || p.tipo_entrega === 'delivery'
+      );
+      return res.json({
+        pedidos: memEntregados,
+        porHora: [
+          { hora: 14, total_pedidos: 6, promedio_minutos: 22, total_facturado: 185.50 },
+          { hora: 15, total_pedidos: 4, promedio_minutos: 28, total_facturado: 124.00 },
+          { hora: 21, total_pedidos: 9, promedio_minutos: 19, total_facturado: 290.00 },
+          { hora: 22, total_pedidos: 7, promedio_minutos: 24, total_facturado: 215.00 }
+        ],
+        porDia: [
+          { fecha: new Date().toISOString().slice(0, 10), total_pedidos: memEntregados.length, entregados: memEntregados.filter(p=>p.estado_pedido==='entregado').length, promedio_minutos: 23, total_facturado: memEntregados.reduce((a,b)=>a+Number(b.total||0), 0) }
+        ]
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener estadísticas del historial.' });
   }
 });
 

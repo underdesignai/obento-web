@@ -150,6 +150,8 @@ export default function Footer({ onOpenAllergens }) {
             © {new Date().getFullYear()} Obento Japanese Food. Todos los derechos reservados. Cocina japonesa para llevar y recoger en La Ñora, Murcia.
           </p>
           <div className="footer-legal">
+            <a href="/delivery" style={{ color: '#c81e22', textDecoration: 'none', fontWeight: 'bold' }}>🛵 App Repartidores</a>
+            <span className="legal-sep">·</span>
             <span className="legal-link">Aviso Legal</span>
             <span className="legal-sep">·</span>
             <span className="legal-link">Privacidad</span>

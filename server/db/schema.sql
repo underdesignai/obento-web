@@ -10,12 +10,20 @@ CREATE TABLE IF NOT EXISTS pedidos (
   cliente_nombre VARCHAR(150) NOT NULL,
   cliente_telefono VARCHAR(50) NOT NULL,
   cliente_email VARCHAR(150),
-  tipo_entrega VARCHAR(50) DEFAULT 'recogida_local',
+  tipo_entrega VARCHAR(50) DEFAULT 'recogida_local', -- 'recogida_local' o 'domicilio'
+  direccion_entrega TEXT,
+  direccion_detalles VARCHAR(255),
+  codigo_postal VARCHAR(10),
+  repartidor_id VARCHAR(50),
+  repartidor_nombre VARCHAR(100),
+  fecha_salida_reparto TIMESTAMP WITH TIME ZONE,
+  fecha_entregado TIMESTAMP WITH TIME ZONE,
+  tiempo_entrega_minutos INTEGER,
   hora_recogida VARCHAR(50),
   notas TEXT,
   metodo_pago VARCHAR(50) NOT NULL, -- 'stripe' o 'restaurante'
   estado_pago VARCHAR(50) NOT NULL DEFAULT 'pendiente', -- 'pendiente', 'pagado', 'fallido'
-  estado_pedido VARCHAR(50) NOT NULL DEFAULT 'recibido', -- 'recibido', 'en_preparacion', 'listo', 'entregado', 'cancelado'
+  estado_pedido VARCHAR(50) NOT NULL DEFAULT 'recibido', -- 'recibido', 'en_preparacion', 'listo', 'listo_reparto', 'en_camino', 'entregado', 'cancelado'
   total NUMERIC(10, 2) NOT NULL,
   stripe_session_id VARCHAR(255),
   stripe_payment_intent_id VARCHAR(255),
