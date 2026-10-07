@@ -122,9 +122,13 @@ export default function DeliveryPage() {
   // Cambiar estado del pedido desde la app de reparto
   const handleCambiarEstado = async (id, nuevoEstado) => {
     try {
+      const pin = sessionStorage.getItem('obento_delivery_pin') || '1234';
       const res = await fetch(`/api/pedidos/${id}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-delivery-pin': pin
+        },
         body: JSON.stringify({
           estado_pedido: nuevoEstado,
           repartidor_nombre: repartidorNombre

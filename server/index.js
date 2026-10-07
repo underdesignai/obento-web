@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import path from 'path';
@@ -28,6 +30,84 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
+// 1. OCULTAR HUELLAS DEL SERVIDOR (FINGERPRINTING MITIGATION)
+app.disable('x-powered-by');
+
+// 2. CABECERAS HTTP DE SEGURIDAD (HELMET)
+app.use(helmet({
+  contentSecurityPolicy: false, // Permite estilos, SVG y bundle sin romper la app Vite
+  crossOriginEmbedderPolicy: false
+}));
+
+// 3. LÍMITE DE TAMAÑO EN PAYLOADS (DEFENSA CONTRA DoS POR AGOTAMIENTO DE MEMORIA)
+app.use(express.json({ limit: '60kb' }));
+app.use(express.urlencoded({ extended: true, limit: '60kb' }));
+
+// 4. CONFIGURACIÓN ESTRICTA DE CORS
+const ALLOWED_ORIGINS = [
+  'https://obento.flowprintcorp.com',
+  'https://obentojapanesefood.es',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5173'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir solicitudes directas (mismo servidor, scripts backend internos, curl o sin header origin)
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Bloqueado por política CORS de seguridad de Obento.'));
+  },
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-delivery-pin', 'x-staff-key']
+}));
+
+// 5. RATE LIMITING (DEFENSA CONTRA FUERZA BRUTA, SCRAPING Y FLOODING)
+const apiGeneralLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 150,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas solicitudes al servidor. Inténtalo en un minuto.' }
+});
+app.use('/api/', apiGeneralLimiter);
+
+const deliveryPinLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiados intentos de acceso al PIN de delivery. Bloqueado temporalmente por seguridad.' }
+});
+app.use('/api/delivery/', deliveryPinLimiter);
+
+const orderCreationLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Límite de pedidos alcanzado para este periodo. Por favor contacta por teléfono.' }
+});
+
+const couponLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiados intentos de verificación de cupones. Espera 5 minutos.' }
+});
+
+// Helper de sanitización de cadenas contra inyección HTML y XSS
+function sanitizeInput(str, maxLength = 255) {
+  if (typeof str !== 'string') return '';
+  return str
+    .slice(0, maxLength)
+    .replace(/[<>]/g, '')
+    .trim();
+}
+
 // Configurar Stripe de forma segura
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY && !process.env.STRIPE_SECRET_KEY.includes('placeholder')
   ? process.env.STRIPE_SECRET_KEY
@@ -35,18 +115,8 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY && !process.env.STRIPE_SEC
 
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
 
-// CORS abierto para permitir el acceso desde la web pública, el monitor Takeaway y el Dashboard
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
 // Fallback en memoria para desarrollo si PostgreSQL no está encendido
 const pedidosEnMemoria = [];
-
-// Middlewares
-app.use(express.json());
 
 // Iniciar base de datos al arrancar
 initDatabase().catch(err => {
@@ -91,11 +161,13 @@ app.get('/api/carta', async (req, res) => {
   res.json([]);
 });
 
-// VALIDAR CUPÓN DE DESCUENTO
-app.post('/api/cupones/validar', async (req, res) => {
+// VALIDAR CUPÓN DE DESCUENTO (Protegido contra fuerza bruta con couponLimiter)
+app.post('/api/cupones/validar', couponLimiter, async (req, res) => {
   try {
     const { codigo, subtotal } = req.body;
-    const resultado = await validarCuponDb(codigo, subtotal);
+    const cleanCodigo = sanitizeInput(codigo, 30);
+    const numSubtotal = Math.max(0, Number(subtotal) || 0);
+    const resultado = await validarCuponDb(cleanCodigo, numSubtotal);
     if (!resultado.valido) {
       return res.status(400).json({ error: resultado.error });
     }
@@ -115,8 +187,8 @@ app.get('/api/ofertas', async (req, res) => {
   }
 });
 
-// 1. CREAR PEDIDO (Pago en Restaurante o directo)
-app.post('/api/pedidos', async (req, res) => {
+// 1. CREAR PEDIDO (Protegido contra Spam DoS con orderCreationLimiter y sanitización estricta)
+app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
   try {
     const {
       cliente_nombre,
@@ -130,7 +202,8 @@ app.post('/api/pedidos', async (req, res) => {
       notas,
       metodo_pago,
       items,
-      total
+      total,
+      cupon_codigo
     } = req.body;
 
     if (!cliente_nombre || !cliente_telefono || !items || !items.length) {
@@ -142,27 +215,27 @@ app.post('/api/pedidos', async (req, res) => {
     }
 
     const payload = {
-      cliente_nombre,
-      cliente_telefono,
-      cliente_email: cliente_email || null,
-      tipo_entrega: tipo_entrega || 'recogida_local',
-      direccion_entrega: direccion_entrega || null,
-      direccion_detalles: direccion_detalles || null,
-      codigo_postal: codigo_postal || null,
-      hora_recogida: hora_recogida || 'Lo antes posible',
-      notas: notas || '',
-      metodo_pago: metodo_pago || 'restaurante',
+      cliente_nombre: sanitizeInput(cliente_nombre, 80),
+      cliente_telefono: sanitizeInput(cliente_telefono, 25),
+      cliente_email: cliente_email ? sanitizeInput(cliente_email, 120) : null,
+      tipo_entrega: tipo_entrega === 'domicilio' ? 'domicilio' : 'recogida_local',
+      direccion_entrega: direccion_entrega ? sanitizeInput(direccion_entrega, 200) : null,
+      direccion_detalles: direccion_detalles ? sanitizeInput(direccion_detalles, 100) : null,
+      codigo_postal: codigo_postal ? sanitizeInput(codigo_postal, 10) : null,
+      hora_recogida: sanitizeInput(hora_recogida, 50) || 'Lo antes posible',
+      notas: notas ? sanitizeInput(notas, 400) : '',
+      metodo_pago: metodo_pago === 'stripe' ? 'stripe' : 'restaurante',
       estado_pago: req.body.estado_pago || (metodo_pago === 'stripe' ? 'pendiente' : 'pendiente_local'),
       estado_pedido: 'recibido',
-      total: Number(total),
-      items
+      total: Math.max(0, Number(total) || 0),
+      items: Array.isArray(items) ? items.slice(0, 50) : []
     };
 
     let pedidoGuardado;
     try {
       pedidoGuardado = await crearPedidoEnDb(payload);
-      if (req.body.cupon_codigo) {
-        await incrementarUsoCuponDb(req.body.cupon_codigo);
+      if (cupon_codigo) {
+        await incrementarUsoCuponDb(sanitizeInput(cupon_codigo, 30));
       }
     } catch (dbErr) {
       console.warn('⚠️ Guardando en memoria temporal (PostgreSQL en espera de conexión):', dbErr.message);
@@ -353,15 +426,31 @@ app.get('/api/pedidos/verify-session/:sessionId', async (req, res) => {
   }
 });
 
-// 4. LISTAR PEDIDOS (Consumida por el Monitor Takeaway y Dashboard)
-app.get('/api/pedidos', async (req, res) => {
+// MIDDLEWARE DE AUTORIZACIÓN PARA PERSONAL / REPARTIDORES
+const verifyStaffOrDelivery = (req, res, next) => {
+  const expectedPin = process.env.DELIVERY_PIN || '1234';
+  const expectedStaffKey = process.env.STAFF_KEY || 'obento_staff_secret';
+  const clientPin = req.headers['x-delivery-pin'] || req.query.pin;
+  const clientStaff = req.headers['x-staff-key'] || req.headers['authorization'];
+
+  if (
+    (clientPin && String(clientPin) === String(expectedPin)) ||
+    (clientStaff && String(clientStaff).includes(expectedStaffKey))
+  ) {
+    return next();
+  }
+  return res.status(401).json({ error: 'Acceso no autorizado. Se requiere autorización de personal.' });
+};
+
+// 4. LISTAR PEDIDOS (Protegido: Solo accesible por personal / monitores autorizados)
+app.get('/api/pedidos', verifyStaffOrDelivery, async (req, res) => {
   try {
     const { estado, soloPagados, limit } = req.query;
     try {
       const pedidos = await obtenerPedidosDb({
-        estado,
+        estado: estado ? sanitizeInput(estado, 30) : undefined,
         soloPagados: soloPagados === 'true',
-        limit: limit || 100
+        limit: Math.min(100, Math.max(1, Number(limit) || 100))
       });
       return res.json(pedidos);
     } catch (dbErr) {
@@ -377,52 +466,86 @@ app.get('/api/pedidos', async (req, res) => {
   }
 });
 
-// 5. DETALLE DE UN PEDIDO
+// 5. DETALLE DE UN PEDIDO (Público para /seguimiento con datos personales enmascarados si no es staff)
 app.get('/api/pedidos/:idOrNumero', async (req, res) => {
   try {
     const { idOrNumero } = req.params;
+    const cleanId = sanitizeInput(idOrNumero, 50);
+    let pedido;
     try {
-      const pedido = await obtenerPedidoPorIdDb(idOrNumero);
-      if (pedido) return res.json(pedido);
+      pedido = await obtenerPedidoPorIdDb(cleanId);
+      if (!pedido) {
+        pedido = pedidosEnMemoria.find(p => p.numero_pedido === cleanId || String(p.id) === String(cleanId));
+      }
     } catch {
-      const pMem = pedidosEnMemoria.find(p => p.numero_pedido === idOrNumero || p.id == idOrNumero);
-      if (pMem) return res.json(pMem);
+      pedido = pedidosEnMemoria.find(p => p.numero_pedido === cleanId || String(p.id) === String(cleanId));
     }
-    res.status(404).json({ error: 'Pedido no encontrado.' });
+    if (!pedido) {
+      return res.status(404).json({ error: 'Pedido no encontrado.' });
+    }
+
+    const expectedPin = process.env.DELIVERY_PIN || '1234';
+    const isStaff = req.headers['x-delivery-pin'] === expectedPin || Boolean(req.headers['x-staff-key']);
+
+    if (!isStaff) {
+      // Enmascarar información sensible para clientes en /seguimiento
+      const tel = pedido.cliente_telefono || '';
+      const maskedTel = tel.length > 4 ? `${tel.slice(0, 3)}***${tel.slice(-2)}` : '***';
+      return res.json({
+        id: pedido.id,
+        numero_pedido: pedido.numero_pedido,
+        cliente_nombre: pedido.cliente_nombre,
+        cliente_telefono: maskedTel,
+        tipo_entrega: pedido.tipo_entrega,
+        hora_recogida: pedido.hora_recogida,
+        estado_pedido: pedido.estado_pedido,
+        estado_pago: pedido.estado_pago,
+        total: pedido.total,
+        items: pedido.items,
+        created_at: pedido.created_at,
+        tiempo_entrega_minutos: pedido.tiempo_entrega_minutos
+      });
+    }
+
+    return res.json(pedido);
   } catch (error) {
     res.status(500).json({ error: 'Error al buscar el pedido.' });
   }
 });
 
-// 6. CAMBIAR ESTADO DE PEDIDO (Monitor Takeaway & Delivery: 'en_preparacion', 'listo', 'listo_reparto', 'en_camino', 'entregado')
-app.patch('/api/pedidos/:id/status', async (req, res) => {
+// 6. CAMBIAR ESTADO DE PEDIDO (Protegido: Monitor Takeaway & Delivery con autorización)
+app.patch('/api/pedidos/:id/status', verifyStaffOrDelivery, async (req, res) => {
   try {
     const { id } = req.params;
+    const cleanId = sanitizeInput(id, 50);
     const { estado_pedido, repartidor_nombre } = req.body;
 
     if (!estado_pedido) {
       return res.status(400).json({ error: 'estado_pedido es obligatorio.' });
     }
 
+    const cleanEstado = sanitizeInput(estado_pedido, 40);
+    const cleanRepartidor = repartidor_nombre ? sanitizeInput(repartidor_nombre, 80) : null;
+
     try {
-      const pedido = await actualizarEstadoPedidoDb(id, estado_pedido, { repartidor_nombre });
-      if (estado_pedido === 'listo' && pedido?.cliente_email) {
+      const pedido = await actualizarEstadoPedidoDb(cleanId, cleanEstado, { repartidor_nombre: cleanRepartidor });
+      if (cleanEstado === 'listo' && pedido?.cliente_email) {
         sendOrderReadyEmail(pedido.cliente_email, pedido).catch(() => {});
       }
       return res.json({ success: true, pedido });
     } catch {
-      const pMem = pedidosEnMemoria.find(p => p.id == id || p.numero_pedido === id);
+      const pMem = pedidosEnMemoria.find(p => p.id == cleanId || p.numero_pedido === cleanId);
       if (pMem) {
-        pMem.estado_pedido = estado_pedido;
-        if (estado_pedido === 'en_camino') {
+        pMem.estado_pedido = cleanEstado;
+        if (cleanEstado === 'en_camino') {
           pMem.fecha_salida_reparto = pMem.fecha_salida_reparto || new Date().toISOString();
-          if (repartidor_nombre) pMem.repartidor_nombre = repartidor_nombre;
-        } else if (estado_pedido === 'entregado') {
+          if (cleanRepartidor) pMem.repartidor_nombre = cleanRepartidor;
+        } else if (cleanEstado === 'entregado') {
           pMem.fecha_entregado = new Date().toISOString();
           const start = new Date(pMem.fecha_salida_reparto || pMem.created_at || Date.now()).getTime();
           pMem.tiempo_entrega_minutos = Math.round((Date.now() - start) / 60000);
         }
-        if (estado_pedido === 'listo' && pMem.cliente_email) {
+        if (cleanEstado === 'listo' && pMem.cliente_email) {
           sendOrderReadyEmail(pMem.cliente_email, pMem).catch(() => {});
         }
         return res.json({ success: true, pedido: pMem });
@@ -542,6 +665,16 @@ if (fs.existsSync(distPath)) {
     next();
   });
 }
+
+// 8. MANEJADOR CENTRALIZADO DE ERRORES (PREVIENE FUGAS DE STACK TRACE)
+app.use((err, req, res, next) => {
+  console.error('⚠️ [Error Handler]:', err.message);
+  res.status(err.status || 500).json({
+    error: err.message && err.message.includes('CORS')
+      ? 'Bloqueado por política de seguridad CORS.'
+      : 'Error interno en el servidor.'
+  });
+});
 
 // Iniciar servidor
 app.listen(PORT, () => {
