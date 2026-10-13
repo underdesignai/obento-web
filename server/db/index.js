@@ -410,6 +410,19 @@ export async function obtenerCartaDb() {
   }
 }
 
+// Obtener imagen binaria de la base de datos (subidas desde el dashboard)
+export async function obtenerImagenDb(id) {
+  try {
+    const numId = parseInt(id, 10);
+    if (isNaN(numId)) return null;
+    const res = await pool.query('SELECT mime, data FROM "Imagen" WHERE id = $1', [numId]);
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error('⚠️ Error al leer imagen de base de datos:', err.message);
+    return null;
+  }
+}
+
 // Registrar eventos de analítica y embudo de conversión
 export async function registrarEventoAnalyticsDb({
   sessionId,

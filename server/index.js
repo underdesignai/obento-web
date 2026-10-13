@@ -15,6 +15,7 @@ import {
   actualizarEstadoPagoDb,
   obtenerPedidoPorIdDb,
   obtenerCartaDb,
+  obtenerImagenDb,
   registrarEventoAnalyticsDb,
   validarCuponDb,
   incrementarUsoCuponDb,
@@ -163,6 +164,22 @@ app.get('/api/carta', async (req, res) => {
     console.warn('⚠️ Error al consultar /api/carta:', err.message);
   }
   res.json([]);
+});
+
+// SERVIR IMÁGENES ALMACENADAS EN POSTGRESQL (Subidas desde el Dashboard)
+app.get('/api/imagenes/:id', async (req, res) => {
+  try {
+    const img = await obtenerImagenDb(req.params.id);
+    if (!img) {
+      return res.status(404).send('Imagen no encontrada');
+    }
+    res.setHeader('Content-Type', img.mime);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.send(img.data);
+  } catch (err) {
+    console.error('⚠️ Error al servir imagen:', err.message);
+    res.status(500).send('Error al procesar imagen');
+  }
 });
 
 // VALIDAR CUPÓN DE DESCUENTO (Protegido contra fuerza bruta con couponLimiter)
