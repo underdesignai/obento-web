@@ -36,7 +36,8 @@ app.disable('x-powered-by');
 // 2. CABECERAS HTTP DE SEGURIDAD (HELMET)
 app.use(helmet({
   contentSecurityPolicy: false, // Permite estilos, SVG y bundle sin romper la app Vite
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  hsts: false // Permite navegación por IP sin forzar bloqueo HTTPS estricto en navegadores
 }));
 
 // 3. LÍMITE DE TAMAÑO EN PAYLOADS (DEFENSA CONTRA DoS POR AGOTAMIENTO DE MEMORIA)
