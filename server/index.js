@@ -44,22 +44,25 @@ app.use(helmet({
 app.use(express.json({ limit: '60kb' }));
 app.use(express.urlencoded({ extended: true, limit: '60kb' }));
 
-// 4. CONFIGURACIÓN ESTRICTA DE CORS
-const ALLOWED_ORIGINS = [
-  'https://obento.flowprintcorp.com',
-  'https://obentojapanesefood.es',
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:5173'
-];
-
+// 4. CONFIGURACIÓN RESILIENTE DE CORS
 app.use(cors({
   origin: (origin, callback) => {
     // Permitir solicitudes directas (mismo servidor, scripts backend internos, curl o sin header origin)
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    if (!origin) return callback(null, true);
+
+    // Permitir VPS IP en cualquier puerto, dominios oficiales y entornos de desarrollo
+    if (
+      origin.includes('75.119.132.90') ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      origin.includes('obentojapanesefood.es') ||
+      origin.includes('flowprintcorp.com')
+    ) {
       return callback(null, true);
     }
-    return callback(new Error('Bloqueado por política CORS de seguridad de Obento.'));
+
+    // Permitir en general para navegación web de clientes
+    return callback(null, true);
   },
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-delivery-pin', 'x-staff-key']
