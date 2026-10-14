@@ -2536,6 +2536,18 @@ img {
   opacity: .4;
 }
 
+.flowprint-link {
+  color: var(--c-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.flowprint-link:hover {
+  color: var(--c-gold);
+  opacity: 0.9;
+}
+
 /* Centrado del Footer en Dispositivos Móviles */
 @media (max-width: 767px) {
   .site-footer {
@@ -2667,8 +2679,12 @@ img {
   }
   .footer-legal {
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
     gap: 8px 12px;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -7364,9 +7380,13 @@ option:hover {
 .footer-legal {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
   gap: 6px;
   margin-top: 8px;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .legal-footer-link {
@@ -7378,6 +7398,8 @@ option:hover {
   padding: 2px 4px;
   transition: color 0.15s ease;
   font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .legal-footer-link:hover {
@@ -7387,11 +7409,15 @@ option:hover {
 .cookie-config-footer-btn {
   color: var(--c-gold, #e09f3e) !important;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .legal-sep {
   color: rgba(255, 255, 255, 0.25);
   font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* =========================================================

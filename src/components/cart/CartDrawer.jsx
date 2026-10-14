@@ -214,10 +214,6 @@ export default function CartDrawer() {
               )}
             </div>
 
-            <div className="cart-summary-line">
-              <span>Recogida en restaurante:</span>
-              <span className="text-free">Gratis (Takeaway)</span>
-            </div>
 
             {couponDiscount > 0 && (
               <>

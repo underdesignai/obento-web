@@ -147,7 +147,15 @@ export default function Footer({ onOpenAllergens, onOpenLegal }) {
         {/* Bottom bar */}
         <div className="footer-bottom">
           <p className="footer-copy">
-            © {new Date().getFullYear()} Obento Japanese Food. Todos los derechos reservados. Cocina japonesa para llevar y recoger en Calle Amargura 3, La Ñora (Murcia).
+            © {new Date().getFullYear()} Obento Japanese Food. Todos los derechos reservados. Diseño Web y Soluciones Automatizadas por{' '}
+            <a
+              href="https://flowprintcorp.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flowprint-link"
+            >
+              Flowprint Corp.
+            </a>
           </p>
           <div className="footer-legal">
             <button

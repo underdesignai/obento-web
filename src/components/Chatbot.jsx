@@ -47,7 +47,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Ir a Pedidos (Elegir Platos)',
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -71,7 +71,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Empezar Pedido para Recoger',
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -83,7 +83,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Hacer Pedido Online (Takeaway)',
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -95,7 +95,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Ver Ofertas y Pedir Online',
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -107,7 +107,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Empezar Pedido para Recoger',
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -119,7 +119,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Empezar Pedido Online',
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -131,7 +131,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Ver Carta y Pedir Online',
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -155,7 +155,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: `🛍️ Pedir ${matchedDish.nombre} Online`,
-        href: '/pedidos'
+        href: 'http://localhost:3651'
       }
     };
   }
@@ -166,7 +166,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
     action: {
       type: 'link',
       label: '🛍️ Empezar a Elegir Platos',
-      href: '/pedidos'
+      href: 'http://localhost:3651'
     }
   };
 }
@@ -376,7 +376,7 @@ export default function Chatbot({ onOpenAllergens }) {
                     fontWeight: 500,
                   }}
                 >
-                  En línea · Asistente Obento
+                  En línea · Asistente IA
                 </span>
               </div>
             </div>

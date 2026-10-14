@@ -10,14 +10,21 @@ import ConversionBanner from './components/ConversionBanner';
 import Footer from './components/Footer';
 import AllergenModal from './components/AllergenModal';
 import Chatbot from './components/Chatbot';
-import PedidosPage from './pages/PedidosPage';
-import TrackingPage from './pages/TrackingPage';
-import DeliveryPage from './pages/DeliveryPage';
-import PwaInstallPrompt from './components/PwaInstallPrompt';
 import CookieBanner from './components/legal/CookieBanner';
 import LegalModal from './components/legal/LegalModal';
-import { CartProvider } from './context/CartContext';
 import { trackPageView } from './utils/analytics';
+
+function RedirectToPedidos({ path = '' }) {
+  useEffect(() => {
+    window.location.href = `http://localhost:3651${path}`;
+  }, [path]);
+  return (
+    <div style={{ padding: '60px 20px', textAlign: 'center', color: '#fff', background: '#0c0b0a', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ fontSize: '1.2rem', marginBottom: '16px' }}>Redirigiendo a la App de Pedidos...</p>
+      <a href={`http://localhost:3651${path}`} style={{ color: '#c81e22', fontWeight: 'bold' }}>Haz clic aquí si no te redirige automáticamente</a>
+    </div>
+  );
+}
 
 function HomeView({ onOpenLegal }) {
   const [isAllergenOpen, setIsAllergenOpen] = useState(false);
@@ -74,9 +81,6 @@ function HomeView({ onOpenLegal }) {
 
       {/* Floating Chatbot Assistant */}
       <Chatbot onOpenAllergens={() => setIsAllergenOpen(true)} />
-
-      {/* PWA Mobile Installation Prompt */}
-      <PwaInstallPrompt />
     </div>
   );
 }
@@ -110,27 +114,25 @@ export default function App() {
   }, []);
 
   return (
-    <CartProvider>
-      <BrowserRouter>
-        <PageTracker />
-        <PwaInstallPrompt />
-        <Routes>
-          <Route path="/" element={<HomeView onOpenLegal={handleOpenLegal} />} />
-          <Route path="/pedidos" element={<PedidosPage />} />
-          <Route path="/seguimiento" element={<TrackingPage />} />
-          <Route path="/tracking" element={<TrackingPage />} />
-          <Route path="/delivery" element={<DeliveryPage />} />
-          <Route path="/reparto" element={<DeliveryPage />} />
-          {/* Fallback a home */}
-          <Route path="*" element={<HomeView onOpenLegal={handleOpenLegal} />} />
-        </Routes>
-        <CookieBanner onOpenCookiesPolicy={() => handleOpenLegal('cookies')} />
-        <LegalModal
-          isOpen={isLegalOpen}
-          initialTab={legalTab}
-          onClose={() => setIsLegalOpen(false)}
-        />
-      </BrowserRouter>
-    </CartProvider>
+    <BrowserRouter>
+      <PageTracker />
+      <Routes>
+        <Route path="/" element={<HomeView onOpenLegal={handleOpenLegal} />} />
+        {/* Rutas de pedidos redirigen a la app de pedidos desacoplada en local */}
+        <Route path="/pedidos" element={<RedirectToPedidos />} />
+        <Route path="/delivery" element={<RedirectToPedidos path="/delivery" />} />
+        <Route path="/reparto" element={<RedirectToPedidos path="/delivery" />} />
+        <Route path="/seguimiento" element={<RedirectToPedidos path="/seguimiento" />} />
+        <Route path="/tracking" element={<RedirectToPedidos path="/tracking" />} />
+        {/* Fallback a home */}
+        <Route path="*" element={<HomeView onOpenLegal={handleOpenLegal} />} />
+      </Routes>
+      <CookieBanner onOpenCookiesPolicy={() => handleOpenLegal('cookies')} />
+      <LegalModal
+        isOpen={isLegalOpen}
+        initialTab={legalTab}
+        onClose={() => setIsLegalOpen(false)}
+      />
+    </BrowserRouter>
   );
 }

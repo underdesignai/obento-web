@@ -4,11 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0c0b0a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Obento">
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-  <link rel="manifest" href="/manifest.json">
   <title>Obento · Sushi para llevar · Japanese Food</title>
   <meta name="description" content="Auténtico sushi japonés para llevar y recoger. Carta completa, especialidades tradicionales y pedidos online.">
   <meta property="og:title" content="Obento · Sushi para llevar · Japanese Food">
@@ -23,15 +18,6 @@
 </head>
 <body>
   <div id="root"></div>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((reg) => console.log('✅ Service Worker PWA activo:', reg.scope))
-          .catch((err) => console.error('❌ Error registrando Service Worker:', err));
-      });
-    }
-  </script>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

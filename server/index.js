@@ -271,6 +271,12 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
       pedidosEnMemoria.unshift(pedidoGuardado);
     }
 
+    if (pedidoGuardado && pedidoGuardado.cliente_email) {
+      sendOrderConfirmedEmail(pedidoGuardado.cliente_email, pedidoGuardado).catch(err => {
+        console.error('⚠️ Error al enviar confirmación de pedido por email:', err.message);
+      });
+    }
+
     res.status(201).json({
       success: true,
       pedido: pedidoGuardado,
@@ -357,13 +363,14 @@ app.post('/api/create-checkout-session', async (req, res) => {
       };
     });
 
+    const clientBase = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null) || CLIENT_URL;
+
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       customer_email: cliente_email || undefined,
-      success_url: `${CLIENT_URL}/pedidos?status=success&session_id={CHECKOUT_SESSION_ID}&numero_pedido=${pedido.numero_pedido}&pedido_id=${pedido.id}`,
-      cancel_url: `${CLIENT_URL}/pedidos?status=cancel`,
+      success_url: `${clientBase}/pedidos?status=success&session_id={CHECKOUT_SESSION_ID}&numero_pedido=${pedido.numero_pedido}&pedido_id=${pedido.id}`,
+      cancel_url: `${clientBase}/pedidos?status=cancel`,
       metadata: {
         pedido_id: String(pedido.id),
         numero_pedido: pedido.numero_pedido

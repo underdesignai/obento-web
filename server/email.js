@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { pool } from './db/index.js';
 
 /**
@@ -6,42 +7,92 @@ import { pool } from './db/index.js';
  * o desde la tabla 'configuracion' (email_config) de PostgreSQL configurada en el dashboard.
  */
 async function getEmailCredentials() {
-  let from = process.env.EMAIL_FROM;
-  let pass = process.env.EMAIL_PASSWORD;
+  let from = process.env.EMAIL_FROM || 'pedidos@obentojapanesefood.es';
+  let resendKey = process.env.RESEND_API_KEY;
+  let pass = process.env.EMAIL_PASSWORD || process.env.SMTP_PASSWORD;
+  let host = process.env.SMTP_HOST;
+  let port = process.env.SMTP_PORT;
 
-  if (!from || !pass) {
+  if (!pass && !resendKey) {
     try {
       const res = await pool.query(
         "SELECT valor FROM configuracion WHERE clave = 'email_config' LIMIT 1"
       );
       if (res.rows.length > 0) {
         const cfg = JSON.parse(res.rows[0].valor);
-        if (!from) from = cfg.from;
-        if (!pass) pass = cfg.password;
+        if (cfg.from) from = cfg.from;
+        if (cfg.resend_key) resendKey = cfg.resend_key;
+        if (cfg.password) pass = cfg.password;
+        if (cfg.host) host = cfg.host;
+        if (cfg.port) port = cfg.port;
       }
     } catch {
       // Ignorar si no hay tabla configuracion aún
     }
   }
 
-  return { from, pass };
+  return { from, pass, host, port, resendKey };
 }
 
 /**
  * Crea o retorna el transporter configurado
  */
 async function getTransporter() {
-  const { from, pass } = await getEmailCredentials();
-  if (!from || !pass) {
+  const { from, pass, host, port, resendKey } = await getEmailCredentials();
+
+  // 1. Prioridad: Resend API (Oficial y transaccional para pedidos@obentojapanesefood.es)
+  if (resendKey) {
+    const resend = new Resend(resendKey);
+    return {
+      transporter: {
+        sendMail: async ({ from: sender, to, subject, html }) => {
+          const res = await resend.emails.send({
+            from: sender || `OBENTO Japanese Food <${from}>`,
+            to: Array.isArray(to) ? to : [to],
+            subject,
+            html
+          });
+          if (res.error) {
+            throw new Error(res.error.message);
+          }
+          return res;
+        }
+      },
+      from: `OBENTO Japanese Food <${from}>`
+    };
+  }
+
+  if (!pass) {
     return { transporter: null, from: from || 'pedidos@obentojapanesefood.es' };
   }
 
+  // 2. Si es una cuenta de Gmail
+  if (from.toLowerCase().endsWith('@gmail.com') && !host) {
+    return {
+      transporter: nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: from, pass }
+      }),
+      from: `"OBENTO Japanese Food" <${from}>`
+    };
+  }
+
+  // 3. Por defecto para SMTP estándar (Hostinger SMTP, etc.)
+  const smtpHost = host || 'smtp.hostinger.com';
+  const smtpPort = Number(port) || 465;
+  const isSecure = smtpPort === 465;
+
   return {
     transporter: nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: from, pass }
+      host: smtpHost,
+      port: smtpPort,
+      secure: isSecure,
+      auth: {
+        user: from,
+        pass: pass
+      }
     }),
-    from
+    from: `"OBENTO Japanese Food" <${from}>`
   };
 }
 
@@ -183,7 +234,7 @@ export async function sendOrderConfirmedEmail(to, data) {
 
   try {
     await transporter.sendMail({
-      from: `"OBENTO Japanese Food" <${emailFrom}>`,
+      from: emailFrom,
       to,
       subject: `¡Pedido confirmado! · ${data.numero_pedido} · OBENTO Japanese Food`,
       html
@@ -246,7 +297,7 @@ export async function sendOrderReadyEmail(to, data) {
 
   try {
     await transporter.sendMail({
-      from: `"OBENTO Japanese Food" <${emailFrom}>`,
+      from: emailFrom,
       to,
       subject: `¡Tu pedido ya está listo para recoger! · ${data.numero_pedido} · OBENTO`,
       html
