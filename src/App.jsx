@@ -13,15 +13,16 @@ import Chatbot from './components/Chatbot';
 import CookieBanner from './components/legal/CookieBanner';
 import LegalModal from './components/legal/LegalModal';
 import { trackPageView } from './utils/analytics';
+import { PEDIDOS_URL } from './config';
 
 function RedirectToPedidos({ path = '' }) {
   useEffect(() => {
-    window.location.href = `http://localhost:3651${path}`;
+    window.location.href = `${PEDIDOS_URL}${path}`;
   }, [path]);
   return (
     <div style={{ padding: '60px 20px', textAlign: 'center', color: '#fff', background: '#0c0b0a', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       <p style={{ fontSize: '1.2rem', marginBottom: '16px' }}>Redirigiendo a la App de Pedidos...</p>
-      <a href={`http://localhost:3651${path}`} style={{ color: '#c81e22', fontWeight: 'bold' }}>Haz clic aquí si no te redirige automáticamente</a>
+      <a href={`${PEDIDOS_URL}${path}`} style={{ color: '#c81e22', fontWeight: 'bold' }}>Haz clic aquí si no te redirige automáticamente</a>
     </div>
   );
 }

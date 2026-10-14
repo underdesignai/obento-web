@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ABOUT_INFO, MENU } from '../data/menuData';
+import { PEDIDOS_URL } from '../config';
 
 // Ícono de Mensaje / Chat de Atención al Cliente (Cálido y humano, no robótico)
 function MessageChatIcon({ size = 20, color = 'currentColor' }) {
@@ -47,7 +48,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Ir a Pedidos (Elegir Platos)',
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -71,7 +72,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Empezar Pedido para Recoger',
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -83,7 +84,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Hacer Pedido Online (Takeaway)',
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -95,7 +96,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Ver Ofertas y Pedir Online',
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -107,7 +108,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Empezar Pedido para Recoger',
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -119,7 +120,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Empezar Pedido Online',
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -131,7 +132,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: '🛍️ Ver Carta y Pedir Online',
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -155,7 +156,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
       action: {
         type: 'link',
         label: `🛍️ Pedir ${matchedDish.nombre} Online`,
-        href: 'http://localhost:3651'
+        href: PEDIDOS_URL
       }
     };
   }
@@ -166,7 +167,7 @@ function getBotResponse(userQuery, onOpenAllergens) {
     action: {
       type: 'link',
       label: '🛍️ Empezar a Elegir Platos',
-      href: 'http://localhost:3651'
+      href: PEDIDOS_URL
     }
   };
 }
