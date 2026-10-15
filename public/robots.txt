@@ -1,0 +1,53 @@
+# ========================================================
+# Robots.txt — Obento Japanese Food
+# https://obentojapanesefood.es
+# Optimizado para buscadores tradicionales y motores de IA (GEO / AEO)
+# ========================================================
+
+# Buscadores tradicionales principales
+User-agent: Googlebot
+User-agent: Googlebot-Image
+User-agent: Bingbot
+User-agent: Slurp
+User-agent: DuckDuckBot
+User-agent: Baiduspider
+User-agent: YandexBot
+User-agent: Applebot
+Allow: /
+Allow: /images/
+Allow: /icons/
+Allow: /assets/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /sitemap.xml
+Disallow: /api/
+Disallow: /admin
+Disallow: /checkout/success
+
+# Motores de Búsqueda de Inteligencia Artificial (AI Crawlers)
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: Bytespider
+User-agent: Diffbot
+User-agent: cohere-ai
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /sitemap.xml
+Disallow: /api/
+
+# Regla global por defecto
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /api/
+
+# Enlace al mapa del sitio
+Sitemap: https://obentojapanesefood.es/sitemap.xml

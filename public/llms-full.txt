@@ -1,0 +1,108 @@
+# Obento Japanese Food — Carta Completa para Motores de Inteligencia Artificial (LLMs)
+
+Restaurante: Obento Japanese Food  
+Web: https://obentojapanesefood.es  
+Dirección: Calle Amargura, 3, 30830 La Ñora, Murcia, España  
+Teléfono: +34 613 92 75 96  
+Precios actualizados a Octubre 2026.
+
+---
+
+## 1. Entrantes
+
+| Plato | Descripción / Ingredientes | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- |
+| **Ensalada wakame** | Alga wakame marinada en salsa aojiso, salmón y toque de sésamo | 6,90 € | Sésamo, Soja, Pescado |
+| **Ebi Fry (3 uds)** | Langostinos empanados crujientes con salsa Sweetchili verde | 5,50 € | Gluten, Crustáceos, Huevo |
+| **Edamame** | Vainas de soja salteadas con aceite de humo, shichimi togarashi y sal en escamas | 4,50 € | Soja |
+| **Gyozas de pollo (4 uds)** | Empanadillas japonesas a la plancha rellenas de pollo | 4,50 € | Gluten, Soja |
+| **Gyozas de verdura (4 uds)** | Empanadillas japonesas a la plancha con relleno 100% vegetal | 4,50 € | Gluten, Soja |
+| **Gyozas de langostino (4 uds)** | Empanadillas japonesas a la plancha rellenas de langostino | 5,50 € | Gluten, Soja, Crustáceos |
+| **Samosas (3 uds)** | Crujientes de hojaldre rellenos de pollo al curry con mayo buldak miel y sésamo | 6,50 € | Gluten, Sésamo, Huevo |
+| **Takoyaki (3 uds)** | Bolitas de pulpo rebozadas, salsa takoyaki, katsuobushi y hojuelas de bonito | 4,50 € | Gluten, Huevo, Moluscos, Pescado |
+
+---
+
+## 2. Sushi — Nigiris (2 piezas por ración)
+
+| Plato | Descripción / Ingredientes | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- |
+| **Nigiri de atún** | Atún Rojo premium Ricardo Fuentes | 6,20 € | Pescado |
+| **Nigiri de atún con foie** | Atún Rojo con foie flambeado, sal marinada y salsa teriyaki | 7,80 € | Pescado, Soja |
+| **Nigiri de salmón** | Salmón noruego fresco seleccionado | 5,50 € | Pescado |
+| **Nigiri de salmón flambeado** | Salmón sellado al soplete con salsa kimchi y toque de azúcar moreno | 6,20 € | Pescado |
+| **Nigiri de chutoro** | Ventresca media de atún sellada al soplete, sal en escamas, pimienta y cebolleta | 10,50 € | Pescado |
+| **Nigiri de vieira** | Vieira fresca sellada al soplete con mayo kimchi, sal en escamas, shichimi y lima | 9,90 € | Moluscos, Huevo |
+| **Nigiri de anguila** | Anguila japonesa glaseada en salsa teriyaki y cebolleta fina | 7,20 € | Pescado, Soja |
+| **Nigiri de hamachi** | Pez limón japonés fresco | 8,90 € | Pescado |
+| **Nigiri de atún toro con trufa** | Mayonesa trufada, cebolleta finamente cortada y atún toro rojo de almadraba | 10,90 € | Pescado, Huevo |
+
+---
+
+## 3. Sushi — Uramakis Especiales (8 piezas por ración)
+
+| Rollo | Descripción / Ingredientes | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- |
+| **Jōnetsu Tuna** | Arroz con sésamo kimchi. Queso crema, aguacate, cebollino y pepino holandés con cobertura de atún y foie flambeado con punto de teriyaki | 14,20 € | Pescado, Lácteos, Sésamo, Soja |
+| **Sakura Roll** | Queso crema, aguacate, cebollino y pepino holandés con cobertura de salmón flambeado, acabado con mayo kimchi y teriyaki | 12,50 € | Pescado, Lácteos, Huevo, Soja |
+| **Chicken roll** | Pollo karaage crujiente, queso crema, cebollino, cobertura de aguacate y salsa acebichada artesanal | 11,50 € | Gluten, Soja, Huevo, Lácteos |
+| **Aurora Roll (Vegetal)** | Micro mezclum, pepino, mango, guacamole trufado, salsa Aojiso y cebolleta fina | 10,50 € | Soja |
+| **Black Dragon** | Espárrago, cebollino, gamba tempurizada, cobertura de atún, mayo buldak miel y boniato crujiente | 15,20 € | Pescado, Soja, Crustáceos, Gluten, Huevo |
+| **Shinigami crab** | Arroz negro, brotes de soja, mango, cangrejo real, cobertura de lubina y salsa spicy mango | 11,50 € | Crustáceos, Huevo, Pescado, Soja |
+| **Rollo Tartar de salmón** | Aguacate, queso crema, cebollino y pepino, coronado con tartar fresco de salmón y salsa Aojiso | 11,30 € | Pescado, Lácteos, Soja |
+| **Rollo Tartar de atún** | Aguacate, queso crema, cebollino y pepino, coronado con tartar fresco de atún y mayo kimchi | 13,80 € | Pescado, Lácteos, Huevo, Soja |
+| **Rollo Tartar de lubina** | Aguacate, queso crema, cebollino y pepino, coronado con tartar fresco de lubina y salsa acebichada | 11,90 € | Pescado, Lácteos |
+
+---
+
+## 4. Sushi — Futomakis (Rollos gruesos)
+
+| Rollo | Descripción / Ingredientes | Piezas | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- | :--- |
+| **Futomaki de salmón** | Relleno de salmón noruego, queso crema y salsa aojiso | 8 uds | 9,90 € | Pescado, Lácteos, Soja |
+| **Futomaki de gamba trufada** | Gamba en tempura, ikura (huevas de salmón), cebollino y mayonesa trufada | 12 uds | 12,20 € | Crustáceos, Soja, Gluten, Huevo, Pescado |
+| **Futomaki karaage** | Pollo karaage rebozado, mango y mayonesa buldak con miel | 12 uds | 10,50 € | Soja, Gluten, Huevo |
+
+---
+
+## 5. Sushi — Makis Tradicionales (8 piezas por ración)
+
+| Rollo | Descripción / Ingredientes | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- |
+| **Maki de salmón** | Salmón noruego fresco envuelto en alga nori | 6,20 € | Pescado |
+| **Maki de chutoro** | Ventresca de atún rojo Ricardo Fuentes | 10,50 € | Pescado |
+| **Maki de atún** | Atún fresco premium | 7,20 € | Pescado |
+| **Maki de aguacate** | Aguacate fresco maduro (vegetariano / vegano) | 5,20 € | Ninguno |
+
+---
+
+## 6. Platos Calientes (Wok & Arroces)
+
+| Plato | Descripción / Ingredientes | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- |
+| **Arroz con ternera** | Arroz salteado con ternera, zanahoria, pimientos verde y rojo, cebolla, espárrago y pepino | 12,50 € | Soja |
+| **Arroz con pollo** | Arroz salteado con pollo, verduras frescas y soja | 11,20 € | Soja |
+| **Yakisoba de langostino** | Fideos salteados con langostino, col, aceite de sésamo, pepino y soja | 13,20 € | Gluten, Crustáceos, Soja, Sésamo |
+| **Yakisoba de ternera** | Fideos salteados con ternera, col, aceite de sésamo, pepino y soja | 12,90 € | Gluten, Soja, Sésamo |
+| **Yakisoba de pollo** | Fideos salteados con pollo, col, aceite de sésamo, pepino y soja | 11,90 € | Gluten, Soja, Sésamo |
+
+---
+
+## 7. Postres Japoneses
+
+| Postre | Descripción | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- |
+| **Mochi de tarta de queso** | Masa dulce de arroz tradicional rellena de helado de tarta de queso | 4,50 € | Lácteos |
+| **Mochi de mango** | Masa dulce de fruta de la pasión con helado de mango | 4,50 € | Lácteos |
+| **Mochi de chocolate** | Masa dulce de arroz rellena de helado cremoso de chocolate | 4,50 € | Lácteos |
+
+---
+
+## 8. Bebidas
+
+| Bebida | Tipo | Precio | Alérgenos |
+| :--- | :--- | :--- | :--- |
+| **Cerveza Asahi** | Cerveza japonesa premium 33cl | 3,50 € | Gluten |
+| **Cerveza Kirin** | Cerveza japonesa premium 33cl | 3,50 € | Gluten |
+| **Refrescos** | Coca-Cola, Coca-Cola Zero, Aquarius, Fanta Naranja, Nestea | 2,20 € | Ninguno |
+| **Agua mineral** | Agua pequeña 50cl | 1,20 € | Ninguno |

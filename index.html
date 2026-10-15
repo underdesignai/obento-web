@@ -1,22 +1,240 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
   <meta name="theme-color" content="#0c0b0a">
-  <title>Obento · Sushi para llevar · Japanese Food</title>
-  <meta name="description" content="Auténtico sushi japonés para llevar y recoger. Carta completa, especialidades tradicionales y pedidos online.">
-  <meta property="og:title" content="Obento · Sushi para llevar · Japanese Food">
-  <meta property="og:description" content="Auténtico sushi japonés para llevar y recoger. Carta completa y pedidos online.">
-  <meta property="og:image" content="https://obento.flowprintcorp.com/images/logo-obento.png">
-  <meta property="og:url" content="https://obento.flowprintcorp.com/">
-  <meta property="og:type" content="website">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- Título SEO y Metadatos Principales -->
+  <title>Obento | Sushi para Llevar y a Domicilio en La Ñora y Murcia</title>
+  <meta name="description" content="Auténtico sushi japonés artesanal para llevar y a domicilio en La Ñora, Guadalupe y Murcia. Atún rojo Ricardo Fuentes, salmón noruego y carta completa. ¡Pide online o al 613 927 596!">
+  <meta name="keywords" content="sushi la ñora, sushi a domicilio murcia, sushi guadalupe, sushi ucam murcia, comida japonesa murcia, takeaway sushi la ñora, atun rojo ricardo fuentes murcia, restaurante japones murcia, obento sushi">
+  <meta name="author" content="Obento Japanese Food">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="https://obentojapanesefood.es/">
+
+  <!-- Geolocalización y SEO Local (Murcia / La Ñora) -->
+  <meta name="geo.region" content="ES-MU">
+  <meta name="geo.placename" content="La Ñora, Murcia, España">
+  <meta name="geo.position" content="37.9897;-1.1969">
+  <meta name="ICBM" content="37.9897, -1.1969">
+
+  <!-- Open Graph / Redes Sociales (WhatsApp, Facebook, LinkedIn, iMessage) -->
+  <meta property="og:site_name" content="Obento Japanese Food">
+  <meta property="og:title" content="Obento | Sushi para Llevar y a Domicilio en La Ñora y Murcia">
+  <meta property="og:description" content="Auténtico sushi japonés artesanal para llevar y a domicilio en La Ñora, Guadalupe y Murcia. Atún rojo Ricardo Fuentes, salmón noruego y carta completa.">
+  <meta property="og:url" content="https://obentojapanesefood.es/">
+  <meta property="og:type" content="restaurant.restaurant">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:image" content="https://obentojapanesefood.es/images/logo-obento.png">
+  <meta property="og:image:secure_url" content="https://obentojapanesefood.es/images/logo-obento.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Obento Japanese Food - Sushi artesanal para llevar y recoger en La Ñora">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Obento | Sushi para Llevar y a Domicilio en La Ñora y Murcia">
+  <meta name="twitter:description" content="Auténtico sushi japonés artesanal para llevar y a domicilio en La Ñora, Guadalupe y Murcia. Atún rojo Ricardo Fuentes y salmón noruego.">
+  <meta name="twitter:image" content="https://obentojapanesefood.es/images/logo-obento.png">
+  <meta name="twitter:image:alt" content="Obento Japanese Food">
+
+  <!-- Iconos y PWA Manifest -->
   <link rel="icon" type="image/png" href="/images/logo-obento.png">
+  <link rel="apple-touch-icon" href="/images/logo-obento.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Obento">
+
+  <!-- Rendimiento & Fuentes Críticas (Preconnect & Preload) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="/images/logo-obento.png">
   <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Shippori+Mincho:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- ========================================================
+       DATOS ESTRUCTURADOS SCHEMA.ORG (JSON-LD) PARA GOOGLE E IA
+       ======================================================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["JapaneseRestaurant", "TakeawayFoodShop", "FastFoodRestaurant"],
+        "@id": "https://obentojapanesefood.es/#restaurant",
+        "name": "Obento Japanese Food",
+        "alternateName": "Obento Sushi La Ñora",
+        "url": "https://obentojapanesefood.es",
+        "logo": "https://obentojapanesefood.es/images/logo-obento.png",
+        "image": "https://obentojapanesefood.es/images/logo-obento.png",
+        "description": "Auténtico sushi japonés artesanal para llevar y entrega a domicilio en La Ñora y Murcia. Atún rojo certificado de Ricardo Fuentes, salmón noruego y cocina hecha al momento.",
+        "telephone": "+34613927596",
+        "priceRange": "€€",
+        "servesCuisine": ["Japanese", "Sushi", "Asian", "Takeaway"],
+        "acceptsReservations": "False",
+        "hasMenu": "https://obentojapanesefood.es/#carta",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "C. Amargura, 3",
+          "addressLocality": "La Ñora",
+          "addressRegion": "Murcia",
+          "postalCode": "30830",
+          "addressCountry": "ES"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 37.9897,
+          "longitude": -1.1969
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": "18:00",
+            "closes": "23:30",
+            "description": "Recogida en local (Takeaway)"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": "20:00",
+            "closes": "23:30",
+            "description": "Reparto a domicilio (Delivery radio 5 km)"
+          }
+        ],
+        "areaServed": [
+          { "@type": "AdministrativeArea", "name": "La Ñora" },
+          { "@type": "AdministrativeArea", "name": "Guadalupe" },
+          { "@type": "AdministrativeArea", "name": "Campus UCAM San Antonio" },
+          { "@type": "AdministrativeArea", "name": "Rincón de Beniscornia" },
+          { "@type": "AdministrativeArea", "name": "Javalí Viejo" },
+          { "@type": "AdministrativeArea", "name": "Javalí Nuevo" },
+          { "@type": "AdministrativeArea", "name": "Puebla de Soto" },
+          { "@type": "AdministrativeArea", "name": "Murcia" }
+        ],
+        "potentialAction": {
+          "@type": "OrderAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://obentojapanesefood.es/#carta",
+            "inLanguage": "es-ES",
+            "actionPlatform": [
+              "http://schema.org/DesktopWebPlatform",
+              "http://schema.org/MobileWebPlatform"
+            ]
+          },
+          "deliveryMethod": [
+            "http://purl.org/goodrelations/v1#DeliveryModePickUp",
+            "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet"
+          ]
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://obentojapanesefood.es/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Hacéis reparto de sushi a domicilio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí, realizamos reparto a domicilio en un radio de 5 km desde nuestro local en La Ñora (incluyendo Guadalupe, UCAM, Rincón de Beniscornia, Javalí Viejo, Javalí Nuevo y Puebla de Soto) de miércoles a domingo de 20:00 a 23:30, con un pedido mínimo de 25€."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿A qué hora se puede recoger el pedido en el local?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Puedes recoger tu pedido en nuestro local de Calle Amargura 3, La Ñora (Murcia) de miércoles a domingo de 18:00 a 23:30. Lunes y martes permanecemos cerrados por descanso."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué calidad tiene el atún y el salmón de Obento?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Trabajamos con Atún Rojo certificado de Ricardo Fuentes (máxima categoría de origen) y salmón noruego seleccionado. Todo el pescado sigue un estricto proceso de conservación y ultracongelación para garantizar su total seguridad y preservar el sabor, frescura y textura original."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cómo puedo realizar un pedido en Obento?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Puedes realizar tu pedido a través de nuestra página web oficial https://obentojapanesefood.es o llamando directamente al teléfono +34 613 92 75 96."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Tenéis opciones vegetarianas o sin pescado crudo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí, disponemos de opciones vegetarianas como el Aurora Roll, Maki de aguacate, Gyozas de verdura y Edamame; y platos sin pescado crudo como el Chicken Roll de pollo karaage, Gyozas de pollo, Yakisoba y Arroces salteados al wok."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- ========================================================
+       GOOGLE ANALYTICS 4 + GOOGLE CONSENT MODE V2
+       ======================================================== -->
+  <script>
+    // Inicialización de Google Consent Mode v2 (RGPD / AEPD compliant)
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+
+    // Por defecto todas las cookies analíticas y publicitarias están denegadas hasta consentimiento
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'analytics_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'wait_for_update': 500
+    });
+
+    // Comprobar si el usuario ya otorgó consentimiento previo en localStorage
+    try {
+      var savedConsent = localStorage.getItem('obento_cookie_consent');
+      if (savedConsent) {
+        var parsed = JSON.parse(savedConsent);
+        if (parsed && parsed.analytics === true) {
+          gtag('consent', 'update', {
+            'analytics_storage': 'granted'
+          });
+        }
+      }
+    } catch(e) {}
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-OBENTO"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-OBENTO', {
+      'anonymize_ip': true,
+      'send_page_view': true
+    });
+  </script>
 </head>
 <body>
+  <!-- Contenido semántico para buscadores y motores de IA sin JS (AEO/GEO Fallback) -->
+  <noscript>
+    <div style="padding: 20px; font-family: sans-serif; background: #0c0b0a; color: #f5f5f0;">
+      <h1>Obento Japanese Food · Sushi Takeaway & Delivery en La Ñora (Murcia)</h1>
+      <p>Auténtico sushi japonés elaborado al momento con Atún Rojo Ricardo Fuentes y Salmón Noruego.</p>
+      <p><strong>Ubicación:</strong> C. Amargura, 3, 30830 La Ñora, Murcia (Junto a Guadalupe y campus UCAM).</p>
+      <p><strong>Teléfono de pedidos:</strong> <a href="tel:613927596" style="color: #d4af37;">613 927 596</a></p>
+      <p><strong>Horarios:</strong> Miércoles a Domingo de 18:00 a 23:30 (Recogida) y de 20:00 a 23:30 (Reparto a domicilio en radio de 5 km).</p>
+      <p>Para ver la carta completa interactiva, por favor activa JavaScript en tu navegador.</p>
+    </div>
+  </noscript>
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

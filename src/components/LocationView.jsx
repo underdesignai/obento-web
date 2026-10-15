@@ -1,5 +1,6 @@
 import React from 'react';
 import { ABOUT_INFO } from '../data/menuData';
+import { trackClickToCall } from '../utils/analytics';
 
 function telHref(tel) {
   return 'tel:' + tel.replace(/[^\d+]/g, '');
@@ -28,6 +29,7 @@ export default function LocationView({ isActive, onBack }) {
           className="btn-secondary-outline btn-block"
           id="btn-call-location"
           href={phoneHref}
+          onClick={trackClickToCall}
           style={{
             textAlign: 'center',
             display: 'block',

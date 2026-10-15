@@ -744,15 +744,57 @@ app.post('/api/analytics/track', async (req, res) => {
   }
 });
 
-// Servir frontend compilado en producción (dist)
+// Servir frontend compilado en producción (dist) con cabeceras de rendimiento y SEO
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, '../dist');
 
 if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
+  // 1. Archivos estáticos de Vite (/assets/) con caché inmutable de 1 año (Core Web Vitals)
+  app.use('/assets', express.static(path.join(distPath, 'assets'), {
+    maxAge: '1y',
+    immutable: true
+  }));
+
+  // 2. Archivos para IA y Motores de Búsqueda (llms.txt, robots.txt, sitemap.xml)
+  app.get('/llms.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(distPath, 'llms.txt'));
+  });
+
+  app.get('/llms-full.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(distPath, 'llms-full.txt'));
+  });
+
+  app.get('/robots.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(distPath, 'robots.txt'));
+  });
+
+  app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(distPath, 'sitemap.xml'));
+  });
+
+  // 3. Resto de estáticos (imágenes, favicon, manifest)
+  app.use(express.static(distPath, {
+    maxAge: '7d',
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      }
+    }
+  }));
+
+  // 4. Fallback SPA (Single Page Application)
   app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
       return res.sendFile(path.join(distPath, 'index.html'));
     }
     next();

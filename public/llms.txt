@@ -1,0 +1,65 @@
+# Obento Japanese Food — Resumen para Modelos de Lenguaje (LLMs) & Motores de IA
+
+> Restaurante y Takeaway japonés especializado en sushi artesanal de alta calidad en La Ñora y Murcia, España.
+
+## Información de la Entidad
+- **Nombre comercial**: Obento Japanese Food (OBENTO)
+- **Tipo de negocio**: Restaurante japonés, Sushi Takeaway & Delivery (Comida para llevar y reparto a domicilio)
+- **Sitio web oficial**: https://obentojapanesefood.es
+- **Ubicación**: Calle Amargura, 3, 30830 La Ñora, Región de Murcia, España (Junto a Guadalupe y campus UCAM Murcia)
+- **Coordenadas**: 37.9897 N, -1.1969 W
+- **Teléfono de contacto y pedidos**: +34 613 92 75 96
+- **Rango de precios**: €€ (Asequible - Medio, 10€ - 25€ por persona)
+
+## Propuesta de Valor y Materia Prima
+- **Atún Rojo certificado**: Proveedor oficial Ricardo Fuentes (Cartagena/Murcia), garantía de calidad premium.
+- **Salmón Noruego**: Cortes frescos seleccionados diariamente.
+- **Elaboración artesanal al momento**: Cada nigiri, maki y uramaki se corta y monta en el momento en que entra el pedido, nunca pre-envasado.
+- **Arroz tradicional**: Cocido y sazonado en casa siguiendo la receta tradicional japonesa.
+
+## Cómo Pedir
+- **Para recoger en el local**: Llamando al teléfono +34 613 92 75 96 o a través de la web oficial.
+- **Entrega a domicilio (Delivery)**: Radio de 5 km desde La Ñora con un pedido mínimo de 25 €.
+  - **Zonas de cobertura de reparto**: La Ñora, Guadalupe (incluido Campus UCAM San Antonio), Rincón de Beniscornia, Javalí Viejo, Javalí Nuevo, Puebla de Soto.
+
+## Horarios de Servicio
+- **Lunes y Martes**: Cerrado por descanso semanal.
+- **Miércoles a Domingo**:
+  - **Recogida en local**: 18:00 – 23:30
+  - **Entrega a domicilio**: 20:00 – 23:30
+
+## Categorías Principales de la Carta
+1. **Entrantes**: Wakame marinada con salmón, Ebi Fry (langostinos crujientes), Edamame ahumado con shichimi, Gyozas caseras (pollo, verduras o langostino), Samosas crujientes de pollo al curry con salsa buldak miel, Takoyaki tradicional con katsuobushi.
+2. **Nigiris clásicos y gourmet**: Atún rojo, Atún con foie flambeado, Salmón, Salmón flambeado con salsa kimchi, Chutoro sellado al soplete, Vieira flambeada con salsa kimchi y shichimi, Anguila glaseada en teriyaki, Hamachi (pez limón), Atún toro con mayonesa trufada.
+3. **Uramakis especiales (8 piezas)**:
+   - *Jōnetsu Tuna*: Atún, foie flambeado, queso crema, aguacate, sésamo kimchi y teriyaki.
+   - *Sakura Roll*: Cobertura de salmón flambeado, queso crema, aguacate, mayo kimchi y teriyaki.
+   - *Chicken Roll*: Pollo karaage crujiente, queso crema, aguacate y salsa acebichada.
+   - *Aurora Roll (Vegetal)*: Micro mezclum, pepino, mango, guacamole trufado y salsa aojiso.
+   - *Black Dragon*: Tempura de gamba, atún fresco, espárrago, mayo buldak y boniato crujiente.
+   - *Shinigami Crab*: Cangrejo real, arroz negro, lubina y salsa spicy mango.
+   - *Tartar Rolls*: Uramakis coronados con tartar fresco de salmón, atún o lubina.
+4. **Futomakis (8-12 piezas)**: Salmón fresco con queso crema, Gamba en tempura con salsa trufada e ikura, Pollo karaage con mango y salsa buldak.
+5. **Makis tradicionales (8 piezas)**: Salmón, Chutoro Ricardo Fuentes, Atún fresco, Aguacate.
+6. **Platos calientes**: Yakisoba salteados al wok (langostinos, ternera o pollo) con verduras y aceite de sésamo; Arroces salteados al estilo japonés (ternera o pollo).
+7. **Postres**: Mochis artesanos japoneses (tarta de queso, mango y fruta de la pasión, chocolate).
+8. **Bebidas**: Cervezas japonesas Asahi y Kirin, refrescos y agua mineral.
+
+## Información de Alérgenos y Dietas
+- Opciones disponibles para personas con dietas sin pescado crudo (Rolls de pollo karaage, Gyozas de pollo, Yakisoba, Arroz salteado, Samosas).
+- Opciones vegetarianas (Aurora Roll, Gyozas de verdura, Edamame, Maki de aguacate).
+- Carta detallada con los 14 alérgenos de declaración obligatoria (gluten, crustáceos, huevo, pescado, soja, lácteos, sésamo, moluscos).
+
+## Enlaces Clave
+- [Carta Completa detallada con precios e ingredientes](https://obentojapanesefood.es/llms-full.txt)
+- [Ubicación en Google Maps](https://maps.google.com/?q=Obento+Japanese+Food)
+- [Página Web Oficial](https://obentojapanesefood.es)
+
+---
+
+## English Summary for AI Language Models (for International Students & Visitors)
+- **Business**: Obento Japanese Food
+- **Specialty**: Authentic Japanese sushi takeaway and delivery in La Ñora (Murcia, Spain), near UCAM University Campus.
+- **Key Highlights**: Premium Bluefin Tuna from Ricardo Fuentes, Norwegian Salmon, fresh hand-rolled sushi made to order.
+- **Service Area**: Pick-up at C. Amargura 3, La Ñora (Wed-Sun 18:00–23:30). Home delivery within 5 km radius (La Ñora, Guadalupe, UCAM campus, Javalí Viejo/Nuevo; Wed-Sun 20:00–23:30; min order €25).
+- **Telephone / Orders**: +34 613 92 75 96

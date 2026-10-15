@@ -1,5 +1,6 @@
 // Utilidad de Analíticas y Seguimiento de Conversión para Obento Takeaway
 // Cumple con la normativa AEPD y LSSI-CE Art. 22.2 (Bloqueo previo al consentimiento)
+// Compatible con Google Consent Mode v2 y Google Analytics 4 (GA4)
 
 function hasAnalyticsConsent() {
   if (typeof window === 'undefined') return false;
@@ -11,6 +12,19 @@ function hasAnalyticsConsent() {
   } catch {
     return false;
   }
+}
+
+// Sincronizar Google Consent Mode v2 en tiempo de ejecución
+if (typeof window !== 'undefined') {
+  window.addEventListener('obento_consent_updated', (event) => {
+    const isAllowed = Boolean(event?.detail?.analytics);
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        analytics_storage: isAllowed ? 'granted' : 'denied',
+        ad_storage: isAllowed ? 'granted' : 'denied'
+      });
+    }
+  });
 }
 
 function getSessionId() {
@@ -36,6 +50,18 @@ export function trackEvent(tipo, data = {}) {
     return;
   }
 
+  // 1. Google Analytics 4 (GA4) Event Dispatch
+  try {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', tipo, {
+        event_category: 'Obento_Takeaway',
+        page_location: data.pagina || window.location.href,
+        ...data
+      });
+    }
+  } catch (_) {}
+
+  // 2. Endpoint Interno PostgreSQL
   const payload = {
     sessionId: getSessionId(),
     tipo,
@@ -80,6 +106,20 @@ export function trackAddToCart(dish, cantidad = 1, totalCarrito = 0, totalCount 
       cantidad: cantidad
     }
   });
+
+  // Evento estándar de Ecommerce para GA4
+  if (hasAnalyticsConsent() && typeof window.gtag === 'function') {
+    window.gtag('event', 'add_to_cart', {
+      currency: 'EUR',
+      value: dish.precio * cantidad,
+      items: [{
+        item_id: String(dish.id),
+        item_name: dish.nombre,
+        price: dish.precio,
+        quantity: cantidad
+      }]
+    });
+  }
 }
 
 export function trackCartView(totalCount = 0, totalCarrito = 0) {
@@ -91,7 +131,7 @@ export function trackCartView(totalCount = 0, totalCarrito = 0) {
 }
 
 export function trackCheckoutOpen(totalCount = 0, totalCarrito = 0) {
-  trackEvent('checkout_open', {
+  trackEvent('begin_checkout', {
     pagina: window.location.pathname,
     cantidadItems: totalCount,
     totalCarrito: totalCarrito
@@ -109,4 +149,35 @@ export function trackOrderCompleted(pedido) {
       metodoPago: pedido?.metodo_pago
     }
   });
+
+  // Evento estándar de Conversión Purchase para GA4
+  if (hasAnalyticsConsent() && typeof window.gtag === 'function') {
+    window.gtag('event', 'purchase', {
+      transaction_id: pedido?.numero_pedido || `ped_${Date.now()}`,
+      value: typeof pedido?.total === 'number' ? pedido.total : 0,
+      currency: 'EUR',
+      items: Array.isArray(pedido?.items)
+        ? pedido.items.map(item => ({
+            item_id: String(item.id || item.dish_id),
+            item_name: item.nombre || item.name,
+            price: item.precio || item.price,
+            quantity: item.cantidad || item.quantity || 1
+          }))
+        : []
+    });
+  }
+}
+
+export function trackClickToCall() {
+  trackEvent('click_to_call', {
+    pagina: window.location.pathname,
+    metadata: { telefono: '+34613927596' }
+  });
+
+  if (hasAnalyticsConsent() && typeof window.gtag === 'function') {
+    window.gtag('event', 'generate_lead', {
+      currency: 'EUR',
+      lead_source: 'phone_call'
+    });
+  }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ABOUT_INFO } from '../data/menuData';
+import { trackClickToCall } from '../utils/analytics';
 
 function telHref(tel) {
   return 'tel:' + tel.replace(/[^\d+]/g, '');
@@ -108,7 +109,7 @@ export default function Footer({ onOpenAllergens, onOpenLegal }) {
           <div className="footer-col">
             <h4 className="footer-heading">Haz tu Pedido</h4>
             <div className="footer-order-box">
-              <a className="btn-primary footer-call-btn" href={phoneHref}>
+              <a className="btn-primary footer-call-btn" href={phoneHref} onClick={trackClickToCall}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="btn-ico-svg">
                   <path d="M4 5c0 8.3 6.7 15 15 15l3-4-6-3-2 2c-2.5-1.2-4.3-3-5.5-5.5l2-2-3-6z" />
                 </svg>
@@ -201,6 +202,26 @@ export default function Footer({ onOpenAllergens, onOpenLegal }) {
             >
               Política de Cookies
             </button>
+            <span className="legal-sep">·</span>
+            <a
+              href="/llms.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="legal-footer-link"
+              title="Información estructurada para Inteligencia Artificial y LLMs"
+            >
+              IA (llms.txt)
+            </a>
+            <span className="legal-sep">·</span>
+            <a
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="legal-footer-link"
+              title="Mapa del sitio web para indexación"
+            >
+              Sitemap
+            </a>
             <span className="legal-sep">·</span>
             <button
               type="button"
