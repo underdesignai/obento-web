@@ -182,6 +182,46 @@ export async function crearPedidoEnDb({
       itemsGuardados.push(itemRes.rows[0]);
     }
 
+    // Registrar o actualizar automáticamente al cliente en la tabla Cliente
+    try {
+      const emailNorm = cliente_email ? cliente_email.toLowerCase().trim() : null;
+      const phoneNorm = cliente_telefono ? cliente_telefono.replace(/\s+/g, '').toLowerCase().trim() : null;
+      const nombreNorm = (cliente_nombre || '').toLowerCase().trim();
+      const clientKey = emailNorm || phoneNorm || nombreNorm;
+
+      let existing = null;
+      if (emailNorm) {
+        const res = await client.query('SELECT id FROM "Cliente" WHERE email = $1', [emailNorm]);
+        if (res.rows.length > 0) existing = res.rows[0];
+      }
+      if (!existing && phoneNorm) {
+        const res = await client.query('SELECT id FROM "Cliente" WHERE telefono = $1', [phoneNorm]);
+        if (res.rows.length > 0) existing = res.rows[0];
+      }
+      if (!existing && clientKey) {
+        const res = await client.query('SELECT id FROM "Cliente" WHERE "clientKey" = $1', [clientKey]);
+        if (res.rows.length > 0) existing = res.rows[0];
+      }
+
+      if (existing) {
+        await client.query(`
+          UPDATE "Cliente"
+          SET "totalPedidos" = "totalPedidos" + 1,
+              "telefono" = COALESCE($1, "telefono"),
+              "email" = COALESCE($2, "email"),
+              "updatedAt" = NOW()
+          WHERE id = $3
+        `, [phoneNorm, emailNorm, existing.id]);
+      } else if (clientKey) {
+        await client.query(`
+          INSERT INTO "Cliente" ("clientKey", nombre, email, telefono, "totalPedidos", "totalReservas", "createdAt", "updatedAt")
+          VALUES ($1, $2, $3, $4, 1, 0, NOW(), NOW())
+        `, [clientKey, cliente_nombre, emailNorm, phoneNorm]);
+      }
+    } catch (clienteErr) {
+      console.warn('⚠️ No se pudo registrar automáticamente en tabla Cliente:', clienteErr.message);
+    }
+
     await client.query('COMMIT');
 
     return {
