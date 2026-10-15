@@ -486,7 +486,6 @@ app.get('/api/pedidos/verify-session/:sessionId', async (req, res) => {
         pedidoActualizado = pedidosEnMemoria.find(p => p.id == lookup || p.numero_pedido === lookup);
         if (pedidoActualizado) {
           pedidoActualizado.estado_pago = 'pagado';
-          pedidoActualizado.estado_pedido = 'preparando';
         }
       }
 
