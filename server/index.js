@@ -245,6 +245,10 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
       return res.status(400).json({ error: 'La dirección de entrega es obligatoria para pedidos a domicilio.' });
     }
 
+    if (tipo_entrega === 'domicilio' && Number(total) < 25) {
+      return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
+    }
+
     const payload = {
       cliente_nombre: sanitizeInput(cliente_nombre, 80),
       cliente_telefono: sanitizeInput(cliente_telefono, 25),
@@ -365,6 +369,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
 
     if (!items || !items.length) {
       return res.status(400).json({ error: 'El carrito no tiene productos.' });
+    }
+
+    if (tipo_entrega === 'domicilio' && Number(total) < 25) {
+      return res.status(400).json({ error: 'El pedido mínimo para entrega a domicilio es de 25,00 €.' });
     }
 
     // 1) Registrar pedido en estado 'pendiente' en la base de datos
