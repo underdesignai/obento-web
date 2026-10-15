@@ -2536,18 +2536,6 @@ img {
   opacity: .4;
 }
 
-.flowprint-link {
-  color: var(--c-text);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color 0.2s ease, opacity 0.2s ease;
-}
-
-.flowprint-link:hover {
-  color: var(--c-gold);
-  opacity: 0.9;
-}
-
 /* Centrado del Footer en Dispositivos Móviles */
 @media (max-width: 767px) {
   .site-footer {
@@ -2679,12 +2667,8 @@ img {
   }
   .footer-legal {
     justify-content: center;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    overflow-x: auto;
-    max-width: 100%;
+    flex-wrap: wrap;
     gap: 8px 12px;
-    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -4070,22 +4054,183 @@ img {
 
 .checkout-modal {
   width: 100%;
-  max-width: 580px;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 1040px;
   background: #181410;
   border: 1px solid var(--c-line);
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+  border-radius: 22px;
+  padding: 26px 32px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.checkout-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  flex: 1;
+  align-items: stretch;
+}
+
+.checkout-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.modalidad-slot-box {
+  min-height: 142px;
+  max-height: 142px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modalidad-slot-box.takeaway {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modalidad-slot-box.domicilio {
+  background: rgba(200, 30, 34, 0.05);
+  border: 1px solid rgba(200, 30, 34, 0.22);
+}
+
+.modalidad-slot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #f3ede0;
+}
+
+.modalidad-slot-tag {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.modalidad-slot-tag.takeaway {
+  background: rgba(224, 159, 62, 0.15);
+  color: var(--c-gold);
+}
+
+.modalidad-slot-tag.domicilio {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.pickup-info-address {
+  font-size: 12px;
+  color: #e5e7eb;
+  margin: 0 0 5px;
+  line-height: 1.35;
+}
+
+.pickup-info-address strong {
+  color: #ffffff;
+}
+
+.pickup-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.pickup-badge-item {
+  font-size: 10.5px;
+  color: #d1c7bc;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pickup-info-hint {
+  font-size: 10.5px;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.form-field-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.form-field-compact label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--c-text);
+  line-height: 1.2;
+}
+
+.form-field-compact input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--c-line);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: var(--c-text);
+  outline: none;
+  font-family: inherit;
+  height: 28px;
+  box-sizing: border-box;
+}
+
+.form-field-compact input:focus {
+  border-color: var(--c-gold);
+}
+
+.form-grid-2-compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 880px) {
+  .checkout-modal {
+    max-width: 580px;
+    height: auto;
+    min-height: auto;
+    max-height: 92vh;
+    padding: 20px 16px;
+  }
+  .checkout-grid-2col {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .modalidad-slot-box {
+    height: auto;
+    min-height: auto;
+    max-height: none;
+  }
 }
 
 .checkout-modal-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--c-line);
 }
 
@@ -4194,8 +4339,8 @@ img {
 .payment-options-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .payment-card-option {
@@ -4203,8 +4348,8 @@ img {
   flex-direction: column;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--c-line);
-  border-radius: 12px;
-  padding: 14px 16px;
+  border-radius: 10px;
+  padding: 10px 14px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -4221,7 +4366,7 @@ img {
 .payment-option-header-row {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -4238,37 +4383,37 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .payment-title {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #ffffff;
 }
 
 .payment-badge-secure {
-  font-size: 10.5px;
+  font-size: 10px;
   background: rgba(59, 178, 115, 0.15);
   color: #3bb273;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 999px;
   font-weight: 700;
 }
 
 .payment-badge-local {
-  font-size: 10.5px;
+  font-size: 10px;
   background: rgba(224, 159, 62, 0.15);
   color: var(--c-gold);
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 999px;
   font-weight: 700;
 }
 
 .payment-desc {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--c-text-dim);
-  line-height: 1.4;
+  line-height: 1.35;
   margin: 0;
 }
 
@@ -4276,34 +4421,44 @@ img {
   background: rgba(0, 0, 0, 0.3);
   border: 1px dashed var(--c-line);
   border-radius: 10px;
-  padding: 14px 18px;
-  margin-bottom: 20px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
 }
 
 .checkout-summary-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .checkout-summary-total {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--c-gold);
 }
 
 .checkout-location-info {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--c-text-dim);
-  margin: 8px 0 0;
+  margin: 5px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .checkout-submit-btn {
   padding: 14px;
   font-size: 15px;
   cursor: pointer;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.checkout-submit-btn span {
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 .btn-loading-state {
@@ -7380,13 +7535,9 @@ option:hover {
 .footer-legal {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .legal-footer-link {
@@ -7398,8 +7549,6 @@ option:hover {
   padding: 2px 4px;
   transition: color 0.15s ease;
   font-family: inherit;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .legal-footer-link:hover {
@@ -7409,15 +7558,11 @@ option:hover {
 .cookie-config-footer-btn {
   color: var(--c-gold, #e09f3e) !important;
   font-weight: 600;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .legal-sep {
   color: rgba(255, 255, 255, 0.25);
   font-size: 12px;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 /* =========================================================
@@ -7539,3 +7684,288 @@ option:hover {
 }
 
 
+
+
+/* ==========================================================================
+   PWA INSTALL BANNER & MODAL (ESTILO OBENTO)
+/* ==========================================================================
+   OBENTO PWA INSTALL PILL (DISEÑO EXACTO AL SCREENSHOT)
+   ========================================================================== */
+.obento-install-pill {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 995;
+  width: calc(100% - 32px);
+  max-width: 580px;
+  background: #141211;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 0 38px 4px rgba(185, 28, 28, 0.45), 0 16px 36px rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px 12px 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: obentoPillPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes obentoPillPop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.obento-install-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.obento-install-logo-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: #0d0c0b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.obento-install-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.obento-install-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.obento-install-title {
+  margin: 0 0 3px 0;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obento-install-sub {
+  margin: 0;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 0.8rem;
+  color: #a09991;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obento-install-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.obento-install-cta {
+  background: linear-gradient(135deg, #c81e22 0%, #a81518 100%);
+  color: #ffffff;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(200, 30, 34, 0.45);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.obento-install-cta:hover {
+  background: #a31518;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(200, 30, 34, 0.6);
+}
+
+.obento-install-close {
+  background: transparent;
+  border: none;
+  color: #8c827a;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.obento-install-close:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+@media (max-width: 480px) {
+  .obento-install-pill {
+    bottom: 16px;
+    padding: 10px 14px;
+    gap: 10px;
+    border-radius: 20px;
+  }
+  .obento-install-logo-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+  .obento-install-logo {
+    width: 38px;
+    height: 38px;
+  }
+  .obento-install-title {
+    font-size: 0.88rem;
+  }
+  .obento-install-sub {
+    font-size: 0.74rem;
+  }
+  .obento-install-cta {
+    padding: 8px 16px;
+    font-size: 0.78rem;
+    border-radius: 10px;
+  }
+}
+
+.ios-install-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.ios-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.9rem;
+  color: #e5e0dc;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #c81e22;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.ios-share-icon, .ios-add-icon {
+  font-size: 1.1rem;
+  color: #ff5252;
+}
+
+
+/* ==========================================================================
+   STRIPE ELEMENTS (INTEGRACIÓN OFICIAL OBENTO)
+   ========================================================================== */
+.stripe-real-card-box {
+  background: rgba(18, 16, 15, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 14px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.stripe-input-wrapper {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+}
+
+.stripe-input-wrapper:focus-within {
+  border-color: #c81e22;
+  box-shadow: 0 0 0 2px rgba(200, 30, 34, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.stripe-unconfigured-box {
+  background: rgba(200, 30, 34, 0.08);
+  border: 1px solid rgba(200, 30, 34, 0.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 12px;
+}
+
+.stripe-badge-warning {
+  background: #c81e22;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.stripe-unconfigured-desc {
+  font-size: 0.82rem;
+  color: #d1c7bc;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.stripe-unconfigured-code {
+  background: #0c0b0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: #e5e0dc;
+  font-family: monospace;
+  margin: 0;
+  overflow-x: auto;
+}
+
+.stripe-loading-box {
+  padding: 20px;
+  text-align: center;
+  color: #a09991;
+  font-size: 0.85rem;
+}
