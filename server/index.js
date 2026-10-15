@@ -15,12 +15,12 @@ import {
   actualizarEstadoPagoDb,
   obtenerPedidoPorIdDb,
   obtenerCartaDb,
-  obtenerImagenDb,
   registrarEventoAnalyticsDb,
   validarCuponDb,
   incrementarUsoCuponDb,
   obtenerOfertasActivasDb,
   obtenerBotWebConfigDb,
+  obtenerStripeConfigDb,
   obtenerHistorialDeliveryDb
 } from './db/index.js';
 import { sendOrderConfirmedEmail, sendOrderReadyEmail } from './email.js';
@@ -28,8 +28,9 @@ import { sendOrderConfirmedEmail, sendOrderReadyEmail } from './email.js';
 dotenv.config();
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+const CLIENT_URL = process.env.CLIENT_URL || 'https://pedidos.obentojapanesefood.es';
 
 // 1. OCULTAR HUELLAS DEL SERVIDOR (FINGERPRINTING MITIGATION)
 app.disable('x-powered-by');
@@ -113,12 +114,36 @@ function sanitizeInput(str, maxLength = 255) {
     .trim();
 }
 
-// Configurar Stripe de forma segura
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY && !process.env.STRIPE_SECRET_KEY.includes('placeholder')
-  ? process.env.STRIPE_SECRET_KEY
-  : null;
+// Obtener cliente de Stripe activo (Sincronizado con BBDD del Panel de Administración y con fallback a .env)
+async function getStripeClient() {
+  try {
+    const dbConfig = await obtenerStripeConfigDb();
+    const sk = (dbConfig.secretKey && !dbConfig.secretKey.includes('placeholder'))
+      ? dbConfig.secretKey
+      : (process.env.STRIPE_SECRET_KEY && !process.env.STRIPE_SECRET_KEY.includes('placeholder')
+        ? process.env.STRIPE_SECRET_KEY
+        : null);
 
-const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
+    if (sk) {
+      return new Stripe(sk);
+    }
+  } catch (err) {
+    console.warn('⚠️ Error al obtener cliente Stripe:', err.message);
+  }
+  return null;
+}
+
+async function getStripePublishableKey() {
+  try {
+    const dbConfig = await obtenerStripeConfigDb();
+    if (dbConfig.publishableKey && !dbConfig.publishableKey.includes('placeholder')) {
+      return dbConfig.publishableKey;
+    }
+  } catch (_) {}
+  return (process.env.STRIPE_PUBLISHABLE_KEY && !process.env.STRIPE_PUBLISHABLE_KEY.includes('placeholder'))
+    ? process.env.STRIPE_PUBLISHABLE_KEY
+    : null;
+}
 
 // Fallback en memoria para desarrollo si PostgreSQL no está encendido
 const pedidosEnMemoria = [];
@@ -133,12 +158,13 @@ initDatabase().catch(err => {
 // =========================================================
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  const stripeClient = await getStripeClient();
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     postgresConfigured: Boolean(process.env.DATABASE_URL || process.env.PGHOST),
-    stripeConfigured: Boolean(stripeSecretKey)
+    stripeConfigured: Boolean(stripeClient)
   });
 });
 
@@ -164,22 +190,6 @@ app.get('/api/carta', async (req, res) => {
     console.warn('⚠️ Error al consultar /api/carta:', err.message);
   }
   res.json([]);
-});
-
-// SERVIR IMÁGENES ALMACENADAS EN POSTGRESQL (Subidas desde el Dashboard)
-app.get('/api/imagenes/:id', async (req, res) => {
-  try {
-    const img = await obtenerImagenDb(req.params.id);
-    if (!img) {
-      return res.status(404).send('Imagen no encontrada');
-    }
-    res.setHeader('Content-Type', img.mime);
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.send(img.data);
-  } catch (err) {
-    console.error('⚠️ Error al servir imagen:', err.message);
-    res.status(500).send('Error al procesar imagen');
-  }
 });
 
 // VALIDAR CUPÓN DE DESCUENTO (Protegido contra fuerza bruta con couponLimiter)
@@ -272,9 +282,9 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
     }
 
     if (pedidoGuardado && pedidoGuardado.cliente_email) {
-      sendOrderConfirmedEmail(pedidoGuardado.cliente_email, pedidoGuardado).catch(err => {
-        console.error('⚠️ Error al enviar confirmación de pedido por email:', err.message);
-      });
+      sendOrderConfirmedEmail(pedidoGuardado.cliente_email, pedidoGuardado)
+        .then(() => console.log(`✉️ Email de confirmación enviado a ${pedidoGuardado.cliente_email} para pedido ${pedidoGuardado.numero_pedido}`))
+        .catch(err => console.error(`⚠️ Error al enviar email de pedido a ${pedidoGuardado.cliente_email}:`, err.message));
     }
 
     res.status(201).json({
@@ -288,6 +298,54 @@ app.post('/api/pedidos', orderCreationLimiter, async (req, res) => {
   }
 });
 
+// OBTENER CONFIGURACIÓN PÚBLICA DE STRIPE
+app.get('/api/stripe-config', async (req, res) => {
+  const stripeClient = await getStripeClient();
+  const pubKey = await getStripePublishableKey();
+  res.json({
+    configured: Boolean(stripeClient && pubKey),
+    publishableKey: pubKey
+  });
+});
+
+// CREAR PAYMENT INTENT DE STRIPE (PARA STRIPE ELEMENTS DENTRO DEL MODAL)
+app.post('/api/create-payment-intent', async (req, res) => {
+  try {
+    const { amount, pedidoData } = req.body;
+    if (!amount || Number(amount) <= 0) {
+      return res.status(400).json({ error: 'Importe no válido.' });
+    }
+
+    const stripeClient = await getStripeClient();
+    if (!stripeClient) {
+      return res.status(400).json({
+        error: 'Stripe no está configurado en el servidor. Configura tus claves en el Panel de Administración o en .env.'
+      });
+    }
+
+    const amountInCents = Math.round(Number(amount) * 100);
+
+    const paymentIntent = await stripeClient.paymentIntents.create({
+      amount: amountInCents,
+      currency: 'eur',
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        cliente_nombre: pedidoData?.cliente_nombre || '',
+        cliente_telefono: pedidoData?.cliente_telefono || '',
+        tipo_entrega: pedidoData?.tipo_entrega || 'recogida_local'
+      }
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      id: paymentIntent.id
+    });
+  } catch (error) {
+    console.error('Error al crear PaymentIntent de Stripe:', error);
+    res.status(500).json({ error: error.message || 'Error al conectar con la pasarela Stripe.' });
+  }
+});
+
 // 2. CREAR SESIÓN DE PAGO EN STRIPE
 app.post('/api/create-checkout-session', async (req, res) => {
   try {
@@ -296,6 +354,9 @@ app.post('/api/create-checkout-session', async (req, res) => {
       cliente_telefono,
       cliente_email,
       tipo_entrega,
+      direccion_entrega,
+      direccion_detalles,
+      codigo_postal,
       hora_recogida,
       notas,
       items,
@@ -313,7 +374,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
       cliente_telefono,
       cliente_email,
       tipo_entrega: tipo_entrega || 'recogida_local',
-      hora_recogida: hora_recogida || 'Lo antes posible',
+      direccion_entrega: tipo_entrega === 'domicilio' ? direccion_entrega : null,
+      direccion_detalles: tipo_entrega === 'domicilio' ? direccion_detalles : null,
+      codigo_postal: tipo_entrega === 'domicilio' ? codigoPostal || codigo_postal : null,
+      hora_recogida: hora_recogida || 'Lo antes posible (~35-45 min)',
       notas: notas || '',
       metodo_pago: 'stripe',
       estado_pago: 'pendiente',
@@ -335,13 +399,13 @@ app.post('/api/create-checkout-session', async (req, res) => {
       pedidosEnMemoria.unshift(pedido);
     }
 
-    // Si Stripe no está configurado con clave real, simular checkout exitoso
-    if (!stripe) {
-      console.log('ℹ️ Stripe está en modo desarrollo/simulado (configura STRIPE_SECRET_KEY en .env).');
-      return res.json({
-        simulated: true,
-        numero_pedido: pedido.numero_pedido,
-        url: `${CLIENT_URL}/pedidos?status=success&simulated=true&numero_pedido=${pedido.numero_pedido}&pedido_id=${pedido.id}`
+    const clientBase = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null) || CLIENT_URL;
+    const activeStripe = await getStripeClient();
+
+    // Si Stripe no está configurado, no se puede proceder al cobro con tarjeta
+    if (!activeStripe) {
+      return res.status(500).json({
+        error: 'La pasarela de pago Stripe no está configurada o disponible en este momento.'
       });
     }
 
@@ -363,25 +427,23 @@ app.post('/api/create-checkout-session', async (req, res) => {
       };
     });
 
-    const clientBase = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null) || CLIENT_URL;
-
-    const session = await stripe.checkout.sessions.create({
+    const session = await activeStripe.checkout.sessions.create({
       line_items,
       mode: 'payment',
       customer_email: cliente_email || undefined,
-      success_url: `${clientBase}/pedidos?status=success&session_id={CHECKOUT_SESSION_ID}&numero_pedido=${pedido.numero_pedido}&pedido_id=${pedido.id}`,
-      cancel_url: `${clientBase}/pedidos?status=cancel`,
+      success_url: `${clientBase}/?status=success&session_id={CHECKOUT_SESSION_ID}&numero_pedido=${pedido.numero_pedido}&pedido_id=${pedido.id}`,
+      cancel_url: `${clientBase}/?status=cancel`,
       metadata: {
         pedido_id: String(pedido.id),
         numero_pedido: pedido.numero_pedido
       }
     });
 
-    // Guardar session_id en PostgreSQL
+    // Guardar stripe_session_id en PostgreSQL
     try {
-      await actualizarEstadoPagoDb(pedido.id, 'pendiente', session.id);
+      await pool.query('UPDATE pedidos SET stripe_session_id = $1 WHERE id = $2', [session.id, pedido.id]);
     } catch (e) {
-      // ignore
+      console.warn('⚠️ Error al asociar stripe_session_id al pedido:', e.message);
     }
 
     res.json({
@@ -399,55 +461,57 @@ app.post('/api/create-checkout-session', async (req, res) => {
 app.get('/api/pedidos/verify-session/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const { numero_pedido, simulated, pedido_id } = req.query;
 
-    if (simulated === 'true') {
-      const pedidoNum = numero_pedido || pedido_id;
-      try {
-        const ped = await actualizarEstadoPagoDb(pedidoNum, 'pagado');
-        if (ped && ped.cliente_email) {
-          sendOrderConfirmedEmail(ped.cliente_email, ped).catch(() => {});
-        }
-        return res.json({ success: true, pagado: true, pedido: ped });
-      } catch {
-        const pMem = pedidosEnMemoria.find(p => p.numero_pedido === pedidoNum || p.id == pedidoNum);
-        if (pMem) {
-          pMem.estado_pago = 'pagado';
-          if (pMem.cliente_email) {
-            sendOrderConfirmedEmail(pMem.cliente_email, pMem).catch(() => {});
-          }
-        }
-        return res.json({ success: true, pagado: true, pedido: pMem });
-      }
+    if (!sessionId || sessionId === 'undefined') {
+      return res.status(400).json({ error: 'Identificador de sesión inválido.' });
     }
 
-    if (!stripe) {
-      return res.json({ success: true, pagado: true });
+    const activeStripe = await getStripeClient();
+    if (!activeStripe) {
+      return res.status(500).json({ error: 'Pasarela de pago Stripe no disponible.' });
     }
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await activeStripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status === 'paid') {
-      const pedidoId = session.metadata?.pedido_id;
-      let pedidoActualizado;
+      const pedidoId = session.metadata?.pedido_id || req.query.pedido_id;
+      const numeroPedido = session.metadata?.numero_pedido || req.query.numero_pedido;
+      const lookup = pedidoId || numeroPedido || sessionId;
+
+      let pedidoActualizado = null;
       try {
-        pedidoActualizado = await actualizarEstadoPagoDb(pedidoId, 'pagado', session.payment_intent);
-        if (pedidoActualizado && pedidoActualizado.cliente_email) {
-          sendOrderConfirmedEmail(pedidoActualizado.cliente_email, pedidoActualizado).catch(() => {});
-        }
-      } catch (err) {
-        const pMem = pedidosEnMemoria.find(p => p.id == pedidoId);
-        if (pMem) {
-          pMem.estado_pago = 'pagado';
-          pedidoActualizado = pMem;
-          if (pMem.cliente_email) {
-            sendOrderConfirmedEmail(pMem.cliente_email, pMem).catch(() => {});
-          }
+        await actualizarEstadoPagoDb(lookup, 'pagado', session.payment_intent);
+        pedidoActualizado = await obtenerPedidoPorIdDb(lookup);
+      } catch (dbErr) {
+        console.error('⚠️ Error al actualizar pago en DB:', dbErr.message);
+        pedidoActualizado = pedidosEnMemoria.find(p => p.id == lookup || p.numero_pedido === lookup);
+        if (pedidoActualizado) {
+          pedidoActualizado.estado_pago = 'pagado';
+          pedidoActualizado.estado_pedido = 'preparando';
         }
       }
+
+      if (!pedidoActualizado && (numeroPedido || pedidoId)) {
+        try {
+          pedidoActualizado = await obtenerPedidoPorIdDb(numeroPedido || pedidoId);
+        } catch {
+          // ignore
+        }
+      }
+
+      // Enviar correo de confirmación de pago oficial
+      if (pedidoActualizado && pedidoActualizado.cliente_email) {
+        console.log(`✉️ Iniciando envío de email de confirmación a ${pedidoActualizado.cliente_email} para pedido ${pedidoActualizado.numero_pedido}...`);
+        sendOrderConfirmedEmail(pedidoActualizado.cliente_email, pedidoActualizado)
+          .then(() => console.log(`✅ Email de confirmación entregado con éxito a ${pedidoActualizado.cliente_email}`))
+          .catch(err => console.error('❌ Error al enviar email de confirmación:', err));
+      } else {
+        console.warn('⚠️ No se pudo enviar email de confirmación: pedido o email no encontrado.', { lookup, pedidoActualizado });
+      }
+
       return res.json({ success: true, pagado: true, pedido: pedidoActualizado });
-    } else {
-      return res.json({ success: false, pagado: false, status: session.payment_status });
     }
+
+    return res.json({ success: true, pagado: false });
   } catch (error) {
     console.error('Error al verificar sesión de Stripe:', error);
     res.status(500).json({ error: 'Error al verificar sesión de pago.' });
