@@ -46,7 +46,7 @@ export default function BentoSpecialties() {
             </div>
             <div className="bento-media-wrap bento-media-large">
               <img
-                src="/images/rolloblack.jpg"
+                src="/images/rolloblack.webp"
                 alt="Black Dragon Roll y Sushi de Autor"
                 className="bento-img"
                 loading="lazy"
@@ -81,7 +81,7 @@ export default function BentoSpecialties() {
             </div>
             <div className="bento-media-wrap bento-media-medium">
               <img
-                src="/images/nigiriatunfoie.jpg"
+                src="/images/nigiriatunfoie.webp"
                 alt="Nigiri de atún con foie"
                 className="bento-img"
                 loading="lazy"
@@ -109,7 +109,7 @@ export default function BentoSpecialties() {
             </div>
             <div className="bento-media-wrap bento-media-small">
               <img
-                src="/images/yakisobalangostino.jpg"
+                src="/images/yakisobalangostino.webp"
                 alt="Yakisoba de langostino"
                 className="bento-img"
                 loading="lazy"
@@ -136,7 +136,7 @@ export default function BentoSpecialties() {
             </div>
             <div className="bento-media-wrap bento-media-small">
               <img
-                src="/images/rollovegetal.jpg"
+                src="/images/rollovegetal.webp"
                 alt="Aurora Roll Vegetal"
                 className="bento-img"
                 loading="lazy"
@@ -162,7 +162,7 @@ export default function BentoSpecialties() {
             </div>
             <div className="bento-media-wrap bento-media-small">
               <img
-                src="/images/mochifresa.jpg"
+                src="/images/mochifresa.webp"
                 alt="Mochis artesanales"
                 className="bento-img"
                 loading="lazy"

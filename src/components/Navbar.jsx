@@ -23,7 +23,12 @@ export default function Navbar({ onOpenAllergens }) {
       <div className="header-container">
         {/* Brand */}
         <div className="brand-group" onClick={() => scrollToSection('hero')} style={{ cursor: 'pointer' }}>
-          <img src="/images/logo-obento.png" alt="Obento" className="nav-logo" />
+          <img
+            src="/images/logo-obento.webp"
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/logo-obento.png'; }}
+            alt="Obento"
+            className="nav-logo"
+          />
           <div className="nav-brand-text">
             <span className="brand-title small">OBENTO</span>
             <span className="nav-brand-sub">Japanese Food · La Ñora</span>

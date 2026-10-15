@@ -12,7 +12,8 @@ export default function SplashView({ isActive, onNavigate }) {
     <section id="view-splash" className={`view seigaiha ${isActive ? 'active' : ''}`}>
       <div className="splash-logo-wrap">
         <img
-          src="/images/logo-obento.png"
+          src="/images/logo-obento.webp"
+          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/logo-obento.png'; }}
           alt="OBENTO · Japanese Food"
           className="splash-logo"
         />

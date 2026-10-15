@@ -34,7 +34,8 @@ export default function HeroSection() {
           {/* Logo visual centrado o de marca */}
           <div className="hero-logo-wrap">
             <img
-              src="/images/logo-obento.png"
+              src="/images/logo-obento.webp"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/logo-obento.png'; }}
               alt="OBENTO Japanese Food"
               className="hero-logo"
             />
