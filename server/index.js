@@ -620,12 +620,6 @@ app.patch('/api/pedidos/:id/status', verifyStaffOrDelivery, async (req, res) => 
 
     try {
       const pedido = await actualizarEstadoPedidoDb(cleanId, cleanEstado, { repartidor_nombre: cleanRepartidor });
-      if (cleanEstado === 'listo' && pedido?.cliente_email) {
-        const pedidoCompleto = (await obtenerPedidoPorIdDb(pedido.id || cleanId)) || pedido;
-        sendOrderReadyEmail(pedido.cliente_email, pedidoCompleto).catch((err) => {
-          console.error('Error enviando email de pedido listo:', err.message);
-        });
-      }
       return res.json({ success: true, pedido });
     } catch {
       const pMem = pedidosEnMemoria.find(p => p.id == cleanId || p.numero_pedido === cleanId);
@@ -638,9 +632,6 @@ app.patch('/api/pedidos/:id/status', verifyStaffOrDelivery, async (req, res) => 
           pMem.fecha_entregado = new Date().toISOString();
           const start = new Date(pMem.fecha_salida_reparto || pMem.created_at || Date.now()).getTime();
           pMem.tiempo_entrega_minutos = Math.round((Date.now() - start) / 60000);
-        }
-        if (cleanEstado === 'listo' && pMem.cliente_email) {
-          sendOrderReadyEmail(pMem.cliente_email, pMem).catch(() => {});
         }
         return res.json({ success: true, pedido: pMem });
       }
