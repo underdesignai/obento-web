@@ -20,7 +20,15 @@ export default function DishSlide({ dish, catSlug }) {
       {dish.imagen && (
         <div className="dish-media-wrap">
           <div className="dish-media">
-            <img src={dish.imagen} alt={dish.nombre} loading="lazy" />
+            <img
+              src={dish.imagen}
+              alt={dish.nombre}
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/images/placeholder.webp';
+              }}
+            />
           </div>
         </div>
       )}
