@@ -2,13 +2,16 @@ import React from 'react';
 import { ABOUT_INFO } from '../data/menuData';
 import MarqueeTicker from './MarqueeTicker';
 import { PEDIDOS_URL } from '../config';
+import { useTheme } from '../context/ThemeContext';
 
 function telHref(tel) {
   return 'tel:' + tel.replace(/[^\d+]/g, '');
 }
 
 export default function HeroSection() {
+  const { themeConfig } = useTheme();
   const phoneHref = telHref(ABOUT_INFO.telefono);
+  const isHalloween = themeConfig.active && themeConfig.theme === 'halloween';
 
   const scrollToMenu = (e) => {
     e.preventDefault();
@@ -43,12 +46,26 @@ export default function HeroSection() {
 
           {/* H1 Principal */}
           <h1 className="hero-title">
-            Descubre el Sabor Auténtico de <span className="text-gold">Japón</span> en La Ñora
+            {isHalloween ? (
+              <>
+                El Sushi más <span className="text-gold" style={{ color: '#ff7518', textShadow: '0 0 20px rgba(255,117,24,0.45)' }}>Tenebroso</span> de Murcia
+              </>
+            ) : (
+              <>
+                Descubre el Sabor Auténtico de <span className="text-gold">Japón</span> en La Ñora
+              </>
+            )}
           </h1>
 
           {/* Subtítulo */}
           <p className="hero-lead">
-            {ABOUT_INFO.lead}
+            {isHalloween ? (
+              <>
+                Edición especial de Halloween en Obento: delicias japonesas con el toque más oscuro, artesanal y exquisito. ¿Te atreves a probarlo?
+              </>
+            ) : (
+              ABOUT_INFO.lead
+            )}
           </p>
 
           {/* Doble CTA */}
