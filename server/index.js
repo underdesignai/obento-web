@@ -37,6 +37,23 @@ const CLIENT_URL = process.env.CLIENT_URL || 'https://pedidos.obentojapanesefood
 // 1. OCULTAR HUELLAS DEL SERVIDOR (FINGERPRINTING MITIGATION)
 app.disable('x-powered-by');
 
+// REDIRECCIÓN 301 AL DOMINIO PRINCIPAL (obentojapanesefood.es)
+// Mientras la nueva web esté en desarrollo, redirige el tráfico y a Google al dominio oficial
+app.use((req, res, next) => {
+  const host = req.get('host') || '';
+  if (host.includes('web.obentojapanesefood.es')) {
+    // Si incluye ?preview=1 o ?dev=1, permitir acceso para continuar el desarrollo
+    if (req.query.preview === '1' || req.query.dev === '1') {
+      return next();
+    }
+    // Redirigir todas las páginas (no endpoints de /api) con 301 Permanente a la web oficial
+    if (!req.path.startsWith('/api') && req.method === 'GET') {
+      return res.redirect(301, 'https://obentojapanesefood.es/');
+    }
+  }
+  next();
+});
+
 // 2. CABECERAS HTTP DE SEGURIDAD (HELMET)
 app.use(helmet({
   contentSecurityPolicy: false, // Permite estilos, SVG y bundle sin romper la app Vite
