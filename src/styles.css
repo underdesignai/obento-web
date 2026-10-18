@@ -7969,3 +7969,64 @@ option:hover {
   color: #a09991;
   font-size: 0.85rem;
 }
+
+/* =========================================================
+   TEMA TEMÁTICO HALLOWEEN · FONDOS DE CEMENTERIO JAPONÉS
+   ========================================================= */
+body.theme-halloween .hero-section {
+  background: 
+    linear-gradient(180deg, rgba(12, 11, 10, 0.72) 0%, rgba(12, 11, 10, 0.52) 40%, rgba(12, 11, 10, 0.95) 100%),
+    radial-gradient(ellipse at 50% 35%, rgba(255, 117, 24, 0.16) 0%, transparent 70%),
+    url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+body.theme-halloween .bento-section {
+  background: 
+    linear-gradient(180deg, rgba(15, 12, 10, 0.85) 0%, rgba(18, 14, 12, 0.76) 50%, rgba(15, 12, 10, 0.9) 100%),
+    radial-gradient(ellipse at 50% 10%, rgba(255, 117, 24, 0.1) 0%, transparent 65%),
+    url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+body.theme-halloween .conversion-section {
+  background: 
+    linear-gradient(180deg, rgba(12, 11, 10, 0.86) 0%, rgba(12, 11, 10, 0.72) 50%, rgba(12, 11, 10, 0.92) 100%),
+    url('/images/halloween/cemetery-3.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+body.theme-halloween .full-menu-section {
+  background: 
+    linear-gradient(180deg, rgba(12, 11, 10, 0.88) 0%, rgba(12, 11, 10, 0.82) 50%, rgba(12, 11, 10, 0.94) 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 117, 24, 0.1) 0%, transparent 60%),
+    url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+body.theme-halloween .business-section {
+  background: 
+    linear-gradient(180deg, rgba(14, 12, 10, 0.86) 0%, rgba(18, 14, 12, 0.78) 50%, rgba(14, 12, 10, 0.92) 100%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 117, 24, 0.1) 0%, transparent 70%),
+    url('/images/halloween/cemetery-3.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+body.theme-halloween .social-section {
+  background: 
+    linear-gradient(180deg, rgba(12, 11, 10, 0.86) 0%, rgba(12, 11, 10, 0.76) 50%, rgba(12, 11, 10, 0.96) 100%),
+    url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+/* En dispositivos móviles y táctiles, scroll natural para máximo rendimiento y suavidad */
+@media (max-width: 900px) {
+  body.theme-halloween .hero-section,
+  body.theme-halloween .bento-section,
+  body.theme-halloween .conversion-section,
+  body.theme-halloween .full-menu-section,
+  body.theme-halloween .business-section,
+  body.theme-halloween .social-section {
+    background-attachment: scroll !important;
+  }
+}
