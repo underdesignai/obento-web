@@ -7971,52 +7971,124 @@ option:hover {
 }
 
 /* =========================================================
-   TEMA TEMÁTICO HALLOWEEN · FONDOS DE CEMENTERIO JAPONÉS
+   TEMA TEMÁTICO HALLOWEEN · FONDOS DE CEMENTERIO Y CONTENEDORES
    ========================================================= */
 body.theme-halloween .hero-section {
   background: 
-    linear-gradient(180deg, rgba(12, 11, 10, 0.72) 0%, rgba(12, 11, 10, 0.52) 40%, rgba(12, 11, 10, 0.95) 100%),
-    radial-gradient(ellipse at 50% 35%, rgba(255, 117, 24, 0.16) 0%, transparent 70%),
+    radial-gradient(ellipse at 50% 30%, rgba(255, 117, 24, 0.22) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(12, 11, 10, 0.55) 0%, rgba(12, 11, 10, 0.35) 45%, rgba(12, 11, 10, 0.92) 100%),
     url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
 body.theme-halloween .bento-section {
   background: 
-    linear-gradient(180deg, rgba(15, 12, 10, 0.85) 0%, rgba(18, 14, 12, 0.76) 50%, rgba(15, 12, 10, 0.9) 100%),
-    radial-gradient(ellipse at 50% 10%, rgba(255, 117, 24, 0.1) 0%, transparent 65%),
+    radial-gradient(ellipse at 50% 10%, rgba(255, 117, 24, 0.16) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(15, 12, 10, 0.65) 0%, rgba(18, 14, 12, 0.5) 50%, rgba(15, 12, 10, 0.85) 100%),
     url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
 body.theme-halloween .conversion-section {
   background: 
-    linear-gradient(180deg, rgba(12, 11, 10, 0.86) 0%, rgba(12, 11, 10, 0.72) 50%, rgba(12, 11, 10, 0.92) 100%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 117, 24, 0.2) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(12, 11, 10, 0.65) 0%, rgba(12, 11, 10, 0.45) 50%, rgba(12, 11, 10, 0.85) 100%),
     url('/images/halloween/cemetery-3.jpg') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
 body.theme-halloween .full-menu-section {
   background: 
-    linear-gradient(180deg, rgba(12, 11, 10, 0.88) 0%, rgba(12, 11, 10, 0.82) 50%, rgba(12, 11, 10, 0.94) 100%),
-    radial-gradient(ellipse at 50% 0%, rgba(255, 117, 24, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 117, 24, 0.16) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(12, 11, 10, 0.72) 0%, rgba(12, 11, 10, 0.6) 50%, rgba(12, 11, 10, 0.88) 100%),
     url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
 body.theme-halloween .business-section {
   background: 
-    linear-gradient(180deg, rgba(14, 12, 10, 0.86) 0%, rgba(18, 14, 12, 0.78) 50%, rgba(14, 12, 10, 0.92) 100%),
-    radial-gradient(ellipse at 50% 100%, rgba(255, 117, 24, 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 117, 24, 0.15) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(14, 12, 10, 0.68) 0%, rgba(18, 14, 12, 0.52) 50%, rgba(14, 12, 10, 0.85) 100%),
     url('/images/halloween/cemetery-3.jpg') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
 body.theme-halloween .social-section {
   background: 
-    linear-gradient(180deg, rgba(12, 11, 10, 0.86) 0%, rgba(12, 11, 10, 0.76) 50%, rgba(12, 11, 10, 0.96) 100%),
+    radial-gradient(ellipse at 50% 20%, rgba(255, 117, 24, 0.15) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(12, 11, 10, 0.68) 0%, rgba(12, 11, 10, 0.55) 50%, rgba(12, 11, 10, 0.9) 100%),
     url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
   background-attachment: fixed !important;
+}
+
+/* Contenedores y Tarjetas con estética gótica japonesa en Halloween */
+body.theme-halloween .dish-slide {
+  background: 
+    radial-gradient(circle at 100% 0%, rgba(255, 117, 24, 0.16) 0%, transparent 55%),
+    linear-gradient(160deg, rgba(31, 22, 17, 0.94) 0%, rgba(16, 12, 11, 0.96) 100%) !important;
+  border: 1px solid rgba(255, 117, 24, 0.3) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 117, 24, 0.18) !important;
+  backdrop-filter: blur(10px);
+}
+
+body.theme-halloween .dish-slide:hover {
+  border-color: rgba(255, 117, 24, 0.65) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 24px rgba(255, 117, 24, 0.25) !important;
+  transform: translateY(-4px);
+}
+
+body.theme-halloween .bento-card {
+  background: 
+    radial-gradient(circle at 90% 10%, rgba(255, 117, 24, 0.2) 0%, transparent 60%),
+    radial-gradient(circle at 0% 100%, rgba(130, 40, 180, 0.15) 0%, transparent 50%),
+    linear-gradient(150deg, rgba(35, 24, 18, 0.94) 0%, rgba(17, 13, 11, 0.97) 100%) !important;
+  border: 1px solid rgba(255, 117, 24, 0.35) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 117, 24, 0.25) !important;
+  backdrop-filter: blur(10px);
+}
+
+body.theme-halloween .bento-card:hover {
+  border-color: rgba(255, 117, 24, 0.7) !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), 0 0 28px rgba(255, 117, 24, 0.28) !important;
+}
+
+body.theme-halloween .conversion-banner {
+  background: 
+    radial-gradient(ellipse at 80% 50%, rgba(255, 117, 24, 0.35) 0%, transparent 65%),
+    radial-gradient(ellipse at 15% 50%, rgba(140, 45, 195, 0.22) 0%, transparent 55%),
+    linear-gradient(135deg, rgba(36, 22, 16, 0.96) 0%, rgba(13, 10, 9, 0.98) 100%) !important;
+  border: 1.5px solid rgba(255, 117, 24, 0.45) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 117, 24, 0.25) !important;
+}
+
+body.theme-halloween .business-info-card,
+body.theme-halloween .business-story-card,
+body.theme-halloween .social-card {
+  background: 
+    radial-gradient(circle at 90% 10%, rgba(255, 117, 24, 0.16) 0%, transparent 60%),
+    linear-gradient(160deg, rgba(30, 21, 17, 0.94) 0%, rgba(15, 12, 11, 0.97) 100%) !important;
+  border: 1px solid rgba(255, 117, 24, 0.3) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 117, 24, 0.18) !important;
+  backdrop-filter: blur(10px);
+}
+
+body.theme-halloween .cat-nav-btn {
+  background: rgba(28, 19, 15, 0.9);
+  border: 1px solid rgba(255, 117, 24, 0.3);
+}
+
+body.theme-halloween .cat-nav-btn.active {
+  background: linear-gradient(135deg, #ff7518 0%, #c81e22 100%) !important;
+  border-color: #ff7518 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 18px rgba(255, 117, 24, 0.5) !important;
+}
+
+body.theme-halloween .sushi-sub-pill.active {
+  background: #ff7518 !important;
+  border-color: #ff7518 !important;
+  color: #110e0c !important;
+  font-weight: 700;
 }
 
 /* En dispositivos móviles y táctiles, scroll natural para máximo rendimiento y suavidad */
