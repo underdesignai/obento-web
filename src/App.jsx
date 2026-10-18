@@ -14,6 +14,8 @@ import CookieBanner from './components/legal/CookieBanner';
 import LegalModal from './components/legal/LegalModal';
 import { trackPageView } from './utils/analytics';
 import { PEDIDOS_URL } from './config';
+import { ThemeProvider } from './context/ThemeContext';
+import FestiveCanvasOverlay from './components/FestiveCanvasOverlay';
 
 function RedirectToPedidos({ path = '' }) {
   useEffect(() => {
@@ -115,25 +117,28 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <PageTracker />
-      <Routes>
-        <Route path="/" element={<HomeView onOpenLegal={handleOpenLegal} />} />
-        {/* Rutas de pedidos redirigen a la app de pedidos desacoplada en local */}
-        <Route path="/pedidos" element={<RedirectToPedidos />} />
-        <Route path="/delivery" element={<RedirectToPedidos path="/delivery" />} />
-        <Route path="/reparto" element={<RedirectToPedidos path="/delivery" />} />
-        <Route path="/seguimiento" element={<RedirectToPedidos path="/seguimiento" />} />
-        <Route path="/tracking" element={<RedirectToPedidos path="/tracking" />} />
-        {/* Fallback a home */}
-        <Route path="*" element={<HomeView onOpenLegal={handleOpenLegal} />} />
-      </Routes>
-      <CookieBanner onOpenCookiesPolicy={() => handleOpenLegal('cookies')} />
-      <LegalModal
-        isOpen={isLegalOpen}
-        initialTab={legalTab}
-        onClose={() => setIsLegalOpen(false)}
-      />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <FestiveCanvasOverlay />
+        <PageTracker />
+        <Routes>
+          <Route path="/" element={<HomeView onOpenLegal={handleOpenLegal} />} />
+          {/* Rutas de pedidos redirigen a la app de pedidos desacoplada en local */}
+          <Route path="/pedidos" element={<RedirectToPedidos />} />
+          <Route path="/delivery" element={<RedirectToPedidos path="/delivery" />} />
+          <Route path="/reparto" element={<RedirectToPedidos path="/delivery" />} />
+          <Route path="/seguimiento" element={<RedirectToPedidos path="/seguimiento" />} />
+          <Route path="/tracking" element={<RedirectToPedidos path="/tracking" />} />
+          {/* Fallback a home */}
+          <Route path="*" element={<HomeView onOpenLegal={handleOpenLegal} />} />
+        </Routes>
+        <CookieBanner onOpenCookiesPolicy={() => handleOpenLegal('cookies')} />
+        <LegalModal
+          isOpen={isLegalOpen}
+          initialTab={legalTab}
+          onClose={() => setIsLegalOpen(false)}
+        />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
