@@ -8013,7 +8013,7 @@ body.theme-halloween .hero-section {
   background: 
     radial-gradient(ellipse at 50% 30%, rgba(255, 117, 24, 0.22) 0%, transparent 65%),
     linear-gradient(180deg, rgba(12, 11, 10, 0.55) 0%, rgba(12, 11, 10, 0.35) 45%, rgba(12, 11, 10, 0.92) 100%),
-    url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-1.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
@@ -8021,7 +8021,7 @@ body.theme-halloween .bento-section {
   background: 
     radial-gradient(ellipse at 50% 10%, rgba(255, 117, 24, 0.16) 0%, transparent 60%),
     linear-gradient(180deg, rgba(15, 12, 10, 0.65) 0%, rgba(18, 14, 12, 0.5) 50%, rgba(15, 12, 10, 0.85) 100%),
-    url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-2.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
@@ -8029,7 +8029,7 @@ body.theme-halloween .conversion-section {
   background: 
     radial-gradient(ellipse at 50% 50%, rgba(255, 117, 24, 0.2) 0%, transparent 65%),
     linear-gradient(180deg, rgba(12, 11, 10, 0.65) 0%, rgba(12, 11, 10, 0.45) 50%, rgba(12, 11, 10, 0.85) 100%),
-    url('/images/halloween/cemetery-3.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-3.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
@@ -8037,7 +8037,7 @@ body.theme-halloween .full-menu-section {
   background: 
     radial-gradient(ellipse at 50% 0%, rgba(255, 117, 24, 0.16) 0%, transparent 60%),
     linear-gradient(180deg, rgba(12, 11, 10, 0.72) 0%, rgba(12, 11, 10, 0.6) 50%, rgba(12, 11, 10, 0.88) 100%),
-    url('/images/halloween/cemetery-1.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-1.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
@@ -8045,7 +8045,7 @@ body.theme-halloween .business-section {
   background: 
     radial-gradient(ellipse at 50% 100%, rgba(255, 117, 24, 0.15) 0%, transparent 70%),
     linear-gradient(180deg, rgba(14, 12, 10, 0.68) 0%, rgba(18, 14, 12, 0.52) 50%, rgba(14, 12, 10, 0.85) 100%),
-    url('/images/halloween/cemetery-3.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-3.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
@@ -8053,7 +8053,7 @@ body.theme-halloween .social-section {
   background: 
     radial-gradient(ellipse at 50% 20%, rgba(255, 117, 24, 0.15) 0%, transparent 65%),
     linear-gradient(180deg, rgba(12, 11, 10, 0.68) 0%, rgba(12, 11, 10, 0.55) 50%, rgba(12, 11, 10, 0.9) 100%),
-    url('/images/halloween/cemetery-2.jpg') center/cover no-repeat !important;
+    url('/images/halloween/cemetery-2.webp') center/cover no-repeat !important;
   background-attachment: fixed !important;
 }
 
