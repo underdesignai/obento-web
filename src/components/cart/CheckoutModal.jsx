@@ -65,6 +65,20 @@ export default function CheckoutModal({ onOrderSuccess }) {
       .catch(() => {});
   }, [isCheckoutOpen]);
 
+  // Bloquear el scroll de la página de fondo mientras el modal de checkout está abierto
+  useEffect(() => {
+    if (!isCheckoutOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalOverscroll = document.body.style.overscrollBehavior;
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'none';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overscrollBehavior = originalOverscroll;
+    };
+  }, [isCheckoutOpen]);
+
   const isBajoMinimoDomicilio = tipoEntrega === 'domicilio' && finalPrice < 25;
 
   if (!isCheckoutOpen) return null;
