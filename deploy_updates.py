@@ -5,7 +5,7 @@ import sys
 
 sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
 
-app_uuid = sys.argv[1] if len(sys.argv) > 1 else "rw5ulk9vgw439djnk6ga7dhi"
+app_uuid = sys.argv[1] if len(sys.argv) > 1 else "zewrjgso0upy02y4kxkpymzr"
 
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
