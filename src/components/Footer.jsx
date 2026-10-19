@@ -148,7 +148,7 @@ export default function Footer({ onOpenAllergens, onOpenLegal }) {
         {/* Bottom bar */}
         <div className="footer-bottom">
           <p className="footer-copy">
-            © {new Date().getFullYear()} Obento Japanese Food. Todos los derechos reservados. Diseño Web y Soluciones Automatizadas por{' '}
+            © {new Date().getFullYear()} Obento Japanese Food. Todos los derechos reservados. Ecosistema diseñado a medida por{' '}
             <a
               href="https://flowprintcorp.com"
               target="_blank"
@@ -156,7 +156,8 @@ export default function Footer({ onOpenAllergens, onOpenLegal }) {
               className="flowprint-link"
             >
               Flowprint Corp.
-            </a>
+            </a>{' '}
+            Desarrollo Web y Soluciones Automatizadas.
           </p>
           <div className="footer-legal">
             <button
