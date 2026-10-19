@@ -851,7 +851,9 @@ if (fs.existsSync(distPath)) {
     maxAge: '7d',
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('.html')) {
-        res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
       }
     }
   }));
@@ -859,7 +861,9 @@ if (fs.existsSync(distPath)) {
   // 4. Fallback SPA (Single Page Application)
   app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
-      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       return res.sendFile(path.join(distPath, 'index.html'));
     }
     next();
