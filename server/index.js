@@ -846,6 +846,11 @@ if (fs.existsSync(distPath)) {
     res.sendFile(path.join(distPath, 'sitemap.xml'));
   });
 
+  // Explicitamente sin PWA en la web informativa
+  app.get(['/manifest.json', '/sw.js'], (req, res) => {
+    res.status(404).send('Not Found');
+  });
+
   // 3. Resto de estáticos (imágenes, favicon, manifest)
   app.use(express.static(distPath, {
     maxAge: '7d',
