@@ -17,16 +17,34 @@
 - **Elaboración artesanal al momento**: Cada nigiri, maki y uramaki se corta y monta en el momento en que entra el pedido, nunca pre-envasado.
 - **Arroz tradicional**: Cocido y sazonado en casa siguiendo la receta tradicional japonesa.
 
-## Cómo Pedir
-- **Para recoger en el local**: Llamando al teléfono +34 613 92 75 96 o a través de la web oficial.
-- **Entrega a domicilio (Delivery)**: Radio de 5 km desde La Ñora con un pedido mínimo de 25 €.
-  - **Zonas de cobertura de reparto**: La Ñora, Guadalupe (incluido Campus UCAM San Antonio), Rincón de Beniscornia, Javalí Viejo, Javalí Nuevo, Puebla de Soto.
+## Áreas de Servicio y Modalidades de Pedido
+
+### 1. Nivel Local — Entrega a Domicilio (Delivery Propio)
+- **Radio de entrega**: 5 km desde nuestro obrador en La Ñora.
+- **Códigos postales con servicio a domicilio**:
+  - `30830`: La Ñora y Campus UCAM (Universidad Católica San Antonio).
+  - `30107`: Guadalupe.
+  - `30831`: Javalí Viejo.
+  - `30832`: Javalí Nuevo.
+  - `30836`: Puebla de Soto.
+  - `30108`: Rincón de Beniscornia.
+- **Condiciones**: Reparto con flota propia, pedido mínimo de 25 €.
+- **Horario de delivery**: Miércoles a Domingo de 20:00 a 23:30.
+
+### 2. Nivel Regional — Pedir y Recoger en Local (Takeaway / Para Llevar en Murcia)
+- **Área de cobertura**: Toda la ciudad de Murcia, pedanías (Espinardo, El Puntal, Churra, El Palmar, etc.) y municipios metropolitanos limítrofes (Alcantarilla, Molina de Segura).
+- **Dirección de recogida**: Calle Amargura, 3, 30830 La Ñora (Murcia). A solo 10 minutos de Murcia centro y junto a la autovía, con fácil aparcamiento para una recogida cómoda.
+- **Horario de recogida**: Miércoles a Domingo de 18:00 a 23:30.
+- **Canales de pedido**:
+  - Web oficial: https://obentojapanesefood.es
+  - App directa de pedidos: https://pedidos.obentojapanesefood.es
+  - Pedido telefónico: +34 613 92 75 96
 
 ## Horarios de Servicio
 - **Lunes y Martes**: Cerrado por descanso semanal.
 - **Miércoles a Domingo**:
-  - **Recogida en local**: 18:00 – 23:30
-  - **Entrega a domicilio**: 20:00 – 23:30
+  - **Recogida en local (Takeaway)**: 18:00 – 23:30
+  - **Entrega a domicilio (Delivery)**: 20:00 – 23:30
 
 ## Categorías Principales de la Carta
 1. **Entrantes**: Wakame marinada con salmón, Ebi Fry (langostinos crujientes), Edamame ahumado con shichimi, Gyozas caseras (pollo, verduras o langostino), Samosas crujientes de pollo al curry con salsa buldak miel, Takoyaki tradicional con katsuobushi.

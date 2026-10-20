@@ -104,5 +104,27 @@ Precios actualizados a Octubre 2026.
 | :--- | :--- | :--- | :--- |
 | **Cerveza Asahi** | Cerveza japonesa premium 33cl | 3,50 € | Gluten |
 | **Cerveza Kirin** | Cerveza japonesa premium 33cl | 3,50 € | Gluten |
-| **Refrescos** | Coca-Cola, Coca-Cola Zero, Aquarius, Fanta Naranja, Nestea | 2,20 € | Ninguno |
-| **Agua mineral** | Agua pequeña 50cl | 1,20 € | Ninguno |
+---
+
+## 9. Cobertura de Entrega y Recogida (SEO Dual Local + Regional)
+
+### Servicio de Reparto a Domicilio (Delivery Propio)
+- **Radio de entrega**: 5 km desde Calle Amargura 3, 30830 La Ñora (Murcia).
+- **Códigos postales cubiertos con delivery**:
+  - `30830`: La Ñora y Campus Universitario UCAM San Antonio.
+  - `30107`: Guadalupe (Murcia).
+  - `30831`: Javalí Viejo (Murcia).
+  - `30832`: Javalí Nuevo (Murcia).
+  - `30836`: Puebla de Soto (Murcia).
+  - `30108`: Rincón de Beniscornia (Murcia).
+- **Condiciones**: Flota propia de reparto, pedido mínimo de 25 €.
+- **Horario de delivery**: Miércoles a Domingo de 20:00 a 23:30.
+
+### Servicio de Pedir y Recoger (Takeaway en Murcia)
+- **Alcance**: Toda la ciudad de Murcia capital, pedanías limítrofes y municipios metropolitanos (Alcantarilla, Molina de Segura, Espinardo, El Palmar, Churra, El Puntal).
+- **Dirección**: Calle Amargura, 3, 30830 La Ñora (Murcia). A solo 10 minutos del centro de Murcia con fácil aparcamiento frente al local.
+- **Horario de recogida**: Miércoles a Domingo de 18:00 a 23:30.
+- **Canales de pedido**:
+  - Web: https://obentojapanesefood.es
+  - App de pedidos: https://pedidos.obentojapanesefood.es
+  - Teléfono: +34 613 92 75 96

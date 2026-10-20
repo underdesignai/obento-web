@@ -6,7 +6,7 @@
   <!-- Página principal -->
   <url>
     <loc>https://obentojapanesefood.es/</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://obentojapanesefood.es/" />
@@ -21,7 +21,7 @@
   <!-- Carta y Menú Completo -->
   <url>
     <loc>https://obentojapanesefood.es/#carta</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -29,23 +29,23 @@
   <!-- Especialidades Bento -->
   <url>
     <loc>https://obentojapanesefood.es/#especialidades</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Ubicación y Zonas de Reparto -->
+  <!-- Ubicación y Zonas de Reparto (SEO Dual Local + Regional) -->
   <url>
     <loc>https://obentojapanesefood.es/#ubicacion</loc>
-    <lastmod>2026-10-15</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Filosofía y Valores (Atún Ricardo Fuentes, Salmón Noruego) -->
   <url>
     <loc>https://obentojapanesefood.es/#valores</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -53,9 +53,17 @@
   <!-- Información estructurada para LLMs de IA -->
   <url>
     <loc>https://obentojapanesefood.es/llms.txt</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Carta completa detallada para LLMs y motores AEO -->
+  <url>
+    <loc>https://obentojapanesefood.es/llms-full.txt</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 
 </urlset>

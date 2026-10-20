@@ -851,7 +851,7 @@ if (fs.existsSync(distPath)) {
     res.status(404).send('Not Found');
   });
 
-  // 3. Resto de estáticos (imágenes, favicon, manifest)
+  // 3. Resto de estáticos (imágenes, favicon, assets hash)
   app.use(express.static(distPath, {
     maxAge: '7d',
     setHeaders: (res, filePath) => {
@@ -859,6 +859,9 @@ if (fs.existsSync(distPath)) {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
+      } else if (filePath.includes(path.sep + 'assets' + path.sep) || filePath.includes('/assets/')) {
+        // Archivos Vite con hash criptográfico en el nombre: caché inmutable por 1 año
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       }
     }
   }));
