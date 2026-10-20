@@ -41,13 +41,20 @@
   <meta name="twitter:image" content="https://obentojapanesefood.es/images/logo-obento.png">
   <meta name="twitter:image:alt" content="Obento Japanese Food">
 
-  <!-- Iconos y PWA Manifest -->
+  <!-- Iconos Estándar Web y Marcadores -->
   <link rel="icon" type="image/png" href="/images/logo-obento.png">
   <link rel="apple-touch-icon" href="/images/logo-obento.png">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Obento">
+
+  <!-- Limpieza de PWA residual en web.obentojapanesefood.es (PWA exclusiva en pedidos) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var i = 0; i < registrations.length; i++) {
+          registrations[i].unregister();
+        }
+      });
+    }
+  </script>
 
   <!-- Rendimiento & Fuentes Críticas (Preconnect & Preload) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
