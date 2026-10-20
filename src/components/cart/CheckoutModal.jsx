@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { trackOrderCompleted } from '../../utils/analytics';
 import { formatWhatsAppOrderMessage } from '../../utils/whatsappOrder';
@@ -26,7 +26,8 @@ export default function CheckoutModal({ onOrderSuccess }) {
     couponDiscount,
     isCheckoutOpen,
     setIsCheckoutOpen,
-    clearCart
+    clearCart,
+    tiendaEstado
   } = useCart();
 
   const [tipoEntrega, setTipoEntrega] = useState('recogida_local'); // 'recogida_local' | 'domicilio'
@@ -51,35 +52,33 @@ export default function CheckoutModal({ onOrderSuccess }) {
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [tiendaEstado, setTiendaEstado] = useState({
-    activo: true,
-    whatsapp: '34613927596'
-  });
 
-  useEffect(() => {
-    fetch('/api/tienda/estado')
-      .then(r => r.json())
-      .then(d => {
-        if (d && typeof d.activo === 'boolean') setTiendaEstado(d);
-      })
-      .catch(() => {});
-  }, [isCheckoutOpen]);
+  const isBajoMinimoDomicilio = tipoEntrega === 'domicilio' && finalPrice < 25;
 
   // Bloquear el scroll de la página de fondo mientras el modal de checkout está abierto
+  // y resetear estados de carga y error al abrir el modal
   useEffect(() => {
     if (!isCheckoutOpen) return;
+    
+    // Al abrir el modal, asegurar que no quede ningún bloqueo residual
+    setLoading(false);
+    setErrorMsg('');
+
     const originalOverflow = document.body.style.overflow;
     const originalOverscroll = document.body.style.overscrollBehavior;
     document.body.style.overflow = 'hidden';
     document.body.style.overscrollBehavior = 'none';
 
+    const handlePageShow = () => setLoading(false);
+    window.addEventListener('pageshow', handlePageShow);
+
     return () => {
       document.body.style.overflow = originalOverflow;
       document.body.style.overscrollBehavior = originalOverscroll;
+      window.removeEventListener('pageshow', handlePageShow);
+      setLoading(false);
     };
   }, [isCheckoutOpen]);
-
-  const isBajoMinimoDomicilio = tipoEntrega === 'domicilio' && finalPrice < 25;
 
   if (!isCheckoutOpen) return null;
 
@@ -146,11 +145,15 @@ export default function CheckoutModal({ onOrderSuccess }) {
       total: finalPrice
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
       if (metodoPago === 'stripe') {
         const res = await fetch('/api/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             cliente_nombre: nombre.trim(),
             cliente_telefono: telefono.trim(),
@@ -166,12 +169,16 @@ export default function CheckoutModal({ onOrderSuccess }) {
           })
         });
 
+        clearTimeout(timeoutId);
+
         const data = await res.json();
         if (!res.ok) {
           throw new Error(data.error || 'Error al conectar con la pasarela Stripe.');
         }
 
         if (data.url) {
+          // Timeout de seguridad por si el navegador cancela o demora la redirección
+          setTimeout(() => setLoading(false), 8000);
           window.location.href = data.url;
           return;
         }
@@ -181,8 +188,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
         const res = await fetch('/api/pedidos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify(pedidoPayload)
         });
+
+        clearTimeout(timeoutId);
 
         const data = await res.json();
         if (!res.ok) {
@@ -191,6 +201,9 @@ export default function CheckoutModal({ onOrderSuccess }) {
 
         clearCart();
         setIsCheckoutOpen(false);
+        try {
+          localStorage.setItem('obento_last_customer', JSON.stringify({ nombre, telefono, email }));
+        } catch (_) {}
         trackOrderCompleted({
           ...data.pedido,
           metodo_pago: 'restaurante'
@@ -200,8 +213,13 @@ export default function CheckoutModal({ onOrderSuccess }) {
         }
       }
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error('Error en checkout:', err);
-      setErrorMsg(err.message || 'Hubo un problema al procesar tu pedido. Inténtalo de nuevo.');
+      if (err.name === 'AbortError') {
+        setErrorMsg('La conexión tardó demasiado en responder. Por favor, compruébalo e inténtalo de nuevo.');
+      } else {
+        setErrorMsg(err.message || 'Hubo un problema al procesar tu pedido. Inténtalo de nuevo.');
+      }
       setLoading(false);
     }
   };
@@ -282,7 +300,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
                   <button
                     type="button"
-                    onClick={() => setTipoEntrega('recogida_local')}
+                    onClick={() => {
+                      setTipoEntrega('recogida_local');
+                      setLoading(false);
+                      setErrorMsg('');
+                    }}
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -305,7 +327,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
 
                   <button
                     type="button"
-                    onClick={() => setTipoEntrega('domicilio')}
+                    onClick={() => {
+                      setTipoEntrega('domicilio');
+                      setLoading(false);
+                      setErrorMsg('');
+                    }}
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -327,7 +353,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                   </button>
                 </div>
 
-                {/* Slot de Dirección / Información de Recogida (Misma altura exacta en ambos modos) */}
+                {/* Slot de Dirección / Información de Recogida */}
                 {tipoEntrega === 'domicilio' ? (
                   <div className="modalidad-slot-box domicilio">
                     <div className="modalidad-slot-header">
@@ -342,6 +368,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                         placeholder="Ej. Calle Amargura, 3"
                         value={direccionEntrega}
                         onChange={(e) => setDireccionEntrega(e.target.value)}
+                        autoComplete="street-address"
                         disabled={loading}
                       />
                     </div>
@@ -353,6 +380,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                           placeholder="Ej. 2º B"
                           value={direccionDetalles}
                           onChange={(e) => setDireccionDetalles(e.target.value)}
+                          autoComplete="address-line2"
                           disabled={loading}
                         />
                       </div>
@@ -363,6 +391,7 @@ export default function CheckoutModal({ onOrderSuccess }) {
                           placeholder="30830 (La Ñora/Murcia)"
                           value={codigoPostal}
                           onChange={(e) => setCodigoPostal(e.target.value)}
+                          autoComplete="postal-code"
                           disabled={loading}
                         />
                       </div>
@@ -524,7 +553,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
                 <div className="payment-options-grid" style={{ marginBottom: '14px' }}>
                   <div
                     className={`payment-card-option payment-card-option-stripe ${metodoPago === 'stripe' ? 'selected' : ''}`}
-                    onClick={() => setMetodoPago('stripe')}
+                    onClick={() => {
+                      setMetodoPago('stripe');
+                      setLoading(false);
+                      setErrorMsg('');
+                    }}
                     role="button"
                     tabIndex={0}
                   >
@@ -534,7 +567,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
                         name="metodo_pago"
                         value="stripe"
                         checked={metodoPago === 'stripe'}
-                        onChange={() => setMetodoPago('stripe')}
+                        onChange={() => {
+                          setMetodoPago('stripe');
+                          setLoading(false);
+                          setErrorMsg('');
+                        }}
                         disabled={loading}
                       />
                       <div className="payment-card-content">
@@ -556,7 +593,11 @@ export default function CheckoutModal({ onOrderSuccess }) {
                         name="metodo_pago"
                         value="restaurante"
                         checked={metodoPago === 'restaurante'}
-                        onChange={() => setMetodoPago('restaurante')}
+                        onChange={() => {
+                          setMetodoPago('restaurante');
+                          setLoading(false);
+                          setErrorMsg('');
+                        }}
                         disabled={loading}
                       />
                       <div className="payment-card-content">
