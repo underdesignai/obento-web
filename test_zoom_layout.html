@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="h-full" style="height: 100%;">
+<head>
+<style>
+body {
+  margin: 0;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: red;
+  zoom: 0.8;
+}
+.app {
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  background: #0c0b0a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+.header { height: 50px; background: #141311; }
+.content { flex: 1; background: #0c0b0a; }
+</style>
+</head>
+<body class="h-full min-h-full flex flex-col">
+  <div class="app">
+    <div class="header">Header</div>
+    <div class="content">Content</div>
+  </div>
+</body>
+</html>

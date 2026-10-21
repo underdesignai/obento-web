@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+  background: red;
+}
+.app {
+  zoom: 0.8;
+  height: calc(100dvh / 0.8);
+  width: calc(100vw / 0.8);
+  background: blue;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+.header { height: 60px; background: #333; }
+.content { flex: 1; background: #222; }
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 255, 0, 0.5); /* semi transparent green */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-box {
+  width: 400px;
+  height: 200px;
+  background: white;
+  color: black;
+}
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">Header</div>
+    <div class="content">Content</div>
+    <div class="modal">
+      <div class="modal-box">MODAL TEST</div>
+    </div>
+  </div>
+</body>
+</html>
