@@ -100,7 +100,7 @@ export default function BusinessValuesSection() {
                     <span className="hours-status">Cerrado por descanso</span>
                   </div>
                   <div className="hours-delivery-note">
-                    <strong>Zonas de reparto (radio 5 km):</strong> La Ñora, Guadalupe, Rincón de Beniscornia, Jabalí Viejo, Jabalí Nuevo y Puebla de Soto.
+                    <strong>Reparto a domicilio (5 km):</strong> Vie y Sáb: 19:00–23:30 | Mié, Jue y Dom: 20:00–23:30 (La Ñora, Guadalupe, Rincón de Beniscornia, Jabalí Viejo, Jabalí Nuevo y Puebla de Soto).
                   </div>
                 </div>
               </div>

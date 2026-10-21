@@ -80,6 +80,9 @@ export default function Footer({ onOpenAllergens, onOpenLegal }) {
                 <div>
                   <span className="f-label">Miércoles a Domingo</span>
                   <span className="f-val">18:00 – 23:30 h</span>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>
+                    Reparto: Vie-Sáb 19:00 | Mié-Jue-Dom 20:00
+                  </span>
                 </div>
               </div>
 
