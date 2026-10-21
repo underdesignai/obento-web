@@ -126,6 +126,7 @@ export default function Footer({ onOpenAllergens, onOpenLegal }) {
                 <div>
                   <span className="f-label">Ubicación</span>
                   <span className="f-val">{ABOUT_INFO.direccion}, {ABOUT_INFO.ciudad}</span>
+                  <span style={{ display: 'block', fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>A escasos minutos de Los Jerónimos y Guadalupe</span>
                 </div>
               </div>
 

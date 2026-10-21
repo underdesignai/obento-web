@@ -34,7 +34,7 @@ export default function BusinessValuesSection() {
                 <div>
                   <div className="info-title">Dirección</div>
                   <div className="info-val">{ABOUT_INFO.direccion}, {ABOUT_INFO.ciudad}</div>
-                  <div className="info-note">A pocos minutos del campus de la UCAM</div>
+                  <div className="info-note">En La Ñora, a escasos minutos de la zona de Los Jerónimos y Guadalupe</div>
                 </div>
               </div>
 

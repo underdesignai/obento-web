@@ -54,6 +54,7 @@ export default function LocationView({ isActive, onBack }) {
             <div>
               <div className="info-title" id="about-address">{ABOUT_INFO.direccion}</div>
               <div className="info-sub" id="about-city">{ABOUT_INFO.ciudad}</div>
+              <div className="info-note" style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', marginTop: '4px' }}>En La Ñora, a escasos minutos de la zona de Los Jerónimos y Guadalupe</div>
             </div>
           </div>
           <div className="info-row">
